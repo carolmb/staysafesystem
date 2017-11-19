@@ -1,25 +1,30 @@
-package com.example.ana.staysafesystem;
+package com.example.ana.staysafesystem.gui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+
+import com.example.ana.staysafesystem.R;
 
 public class UserModeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(!isValidUser()) {
+            Util.changeScreen(this, LoginActivity.class);
+        }
+
         final SharedPreferences sharedPref = getSharedPreferences("Mode", Context.MODE_PRIVATE);
         final String mode = sharedPref.getString("mode", null);
+        setContentView(R.layout.activity_user_mode);
         if(mode != null) {
             nextScreen(mode);
         } else {
-            setContentView(R.layout.activity_user_mode);
             Button guardianUser = (Button) findViewById(R.id.guardian);
             guardianUser.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -46,11 +51,19 @@ public class UserModeActivity extends AppCompatActivity {
 
     void nextScreen(String mode) {
         if(mode.contentEquals("guardian")) {
-            Intent myIntent = new Intent(this, GuardianUserActivity.class);
-            startActivity(myIntent);
+            Util.changeScreen(this, GuardianUserActivity.class);
         } else {
-            Intent myIntent = new Intent(this, ProtectedUserActivity.class);
-            startActivity(myIntent);
+            Util.changeScreen(this, ProtectedUserActivity.class);
         }
+    }
+
+    boolean isValidUser() {
+        final SharedPreferences sharedPref = getSharedPreferences("login", Context.MODE_PRIVATE);
+        final String userNumber = sharedPref.getString("userNumber", null);
+        final String userName = sharedPref.getString("userName", null);
+        if(userNumber != null && userName != null) {
+            return true;
+        }
+        return false;
     }
 }

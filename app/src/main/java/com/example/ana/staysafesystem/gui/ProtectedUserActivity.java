@@ -1,19 +1,25 @@
-package com.example.ana.staysafesystem;
+package com.example.ana.staysafesystem.gui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.ana.staysafesystem.R;
 
 public class ProtectedUserActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_protected_user);
         final SharedPreferences sharedPref = getSharedPreferences("Button", Context.MODE_PRIVATE);
         final String b1 = sharedPref.getString("b1", null);
@@ -41,7 +47,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
         imageButton.setImageResource(android.R.drawable.ic_input_add);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                Util.changeScreen(view.getContext(), AddFuncActivity.class);
             }
         });
     }
@@ -55,5 +61,42 @@ public class ProtectedUserActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.menuAbout:
+                Toast.makeText(this,
+                        "Stay Safe System foi pensado com carinho para te ajudar.",
+                        Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menuSettings:
+                Util.changeScreen(this, SettingsActivity.class);
+                break;
+
+            case R.id.menuLogout:
+                logout();
+                Util.changeScreen(this, LoginActivity.class);
+                break;
+
+        }
+        return true;
+    }
+
+    void logout() {
+        SharedPreferences sharedPref =
+                getSharedPreferences("login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sharedPref.edit();
+        ed.putString("userNumber", null);
+        ed.putString("userName", null);
+        ed.commit();
     }
 }

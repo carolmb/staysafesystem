@@ -13,18 +13,23 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat.Light">
         android:debuggable="true"
-        <activity android:name=".MainActivity">
+        <activity android:name=".gui.UserModeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserModeActivity" />
-        <activity android:name=".ProtectedUserActivity" />
-        <activity android:name=".GuardianUserActivity"></activity>
+        <activity android:name=".gui.LoginActivity" />
+        <activity android:name=".gui.ProtectedUserActivity" />
+        <activity android:name=".gui.GuardianUserActivity" />
+        <activity android:name=".gui.AddFuncActivity" />
+        <activity android:name=".gui.CallFuncActivity" />
+        <activity android:name=".gui.MsgFuncActivity" />
+        <activity android:name=".gui.TrackBackActivity" />
+        <activity android:name=".gui.SettingsActivity"></activity>
     </application>
 
 </manifest>
