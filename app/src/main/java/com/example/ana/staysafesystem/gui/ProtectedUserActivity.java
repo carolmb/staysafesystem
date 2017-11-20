@@ -82,21 +82,21 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 Util.changeScreen(this, SettingsActivity.class);
                 break;
 
+            case R.id.menuMode:
+                // clean mode
+                Util.setPref(this, "mode", "mode", null);
+                Util.changeScreen(this, UserModeActivity.class);
+                break;
+
             case R.id.menuLogout:
-                logout();
+                // logout + clean mode
+                Util.setPref(this, "login", "userName", null);
+                Util.setPref(this, "login", "userNumber", null);
+                Util.setPref(this, "mode", "mode", null);
                 Util.changeScreen(this, LoginActivity.class);
                 break;
 
         }
         return true;
-    }
-
-    void logout() {
-        SharedPreferences sharedPref =
-                getSharedPreferences("login", Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPref.edit();
-        ed.putString("userNumber", null);
-        ed.putString("userName", null);
-        ed.commit();
     }
 }

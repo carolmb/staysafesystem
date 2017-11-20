@@ -1,7 +1,5 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -18,8 +16,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final SharedPreferences sharedPref =
-                getSharedPreferences("login", Context.MODE_PRIVATE);
         Button next = (Button) findViewById(R.id.login);
         next.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -28,10 +24,8 @@ public class LoginActivity extends AppCompatActivity {
             String number = numberEditText.getText().toString();
             String name = nameEditText.getText().toString();
             if (!number.contentEquals("") && !name.contentEquals("")) {
-                SharedPreferences.Editor ed = sharedPref.edit();
-                ed.putString("userNumber", number);
-                ed.putString("userName", name);
-                ed.commit();
+                Util.setPref(view.getContext(), "login", "userName", name);
+                Util.setPref(view.getContext(), "login", "userNumber", number);
                 Util.changeScreen(view.getContext(), UserModeActivity.class);
             } else {
                 Util.dialog("É necessário informar seu número celular e seu nome.",

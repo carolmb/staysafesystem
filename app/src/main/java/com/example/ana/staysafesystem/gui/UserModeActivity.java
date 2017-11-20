@@ -58,9 +58,8 @@ public class UserModeActivity extends AppCompatActivity {
     }
 
     boolean isValidUser() {
-        final SharedPreferences sharedPref = getSharedPreferences("login", Context.MODE_PRIVATE);
-        final String userNumber = sharedPref.getString("userNumber", null);
-        final String userName = sharedPref.getString("userName", null);
+        String userName = Util.getPref(this, "login", "userName");
+        String userNumber = Util.getPref(this, "login", "userNumber");
         if(userNumber != null && userName != null) {
             return true;
         }

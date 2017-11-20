@@ -9,6 +9,10 @@
         android:title="Perfil" />
 
     <item
+        android:id="@+id/menuMode"
+        android:title="Trocar modo" />
+
+    <item
         android:id="@+id/menuLogout"
         android:title="Sair" />
 </menu>
