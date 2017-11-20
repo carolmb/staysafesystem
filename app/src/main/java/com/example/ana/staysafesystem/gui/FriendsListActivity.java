@@ -17,6 +17,10 @@ import com.example.ana.staysafesystem.R;
 
 import java.util.ArrayList;
 
+/* Code from:
+* https://www.android-examples.com/get-show-all-phone-contacts-into-listview-in-android/
+* */
+
 public class FriendsListActivity extends AppCompatActivity {
 
     ListView listView ;
