@@ -10,7 +10,7 @@ import android.support.v7.app.AlertDialog;
  */
 
 public class Util {
-    public static void dialog(String msg, Context context) {
+    public static void dialog(Context context, String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(msg);
         builder.setCancelable(true);

@@ -19,31 +19,27 @@ public class UserModeActivity extends AppCompatActivity {
             Util.changeScreen(this, LoginActivity.class);
         }
 
-        final SharedPreferences sharedPref = getSharedPreferences("Mode", Context.MODE_PRIVATE);
-        final String mode = sharedPref.getString("mode", null);
         setContentView(R.layout.activity_user_mode);
+
+        String mode = Util.getPref(this, "mode", "mode");
         if(mode != null) {
             nextScreen(mode);
         } else {
-            Button guardianUser = (Button) findViewById(R.id.guardian);
+            Button guardianUser = findViewById(R.id.guardian);
             guardianUser.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    String mode = "guardian";
-                    SharedPreferences.Editor ed = sharedPref.edit();
-                    ed.putString("mode", mode);
-                    ed.commit();
-                    nextScreen(mode);
+                    String newMode = "guardian";
+                    Util.setPref(view.getContext(), "mode", "mode", newMode);
+                    nextScreen(newMode);
                 }
             });
 
             Button secureUser = (Button) findViewById(R.id.secure);
             secureUser.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    String mode = "secure";
-                    SharedPreferences.Editor ed = sharedPref.edit();
-                    ed.putString("mode", mode);
-                    ed.commit();
-                    nextScreen(mode);
+                    String newMode = "secure";
+                    Util.setPref(view.getContext(), "mode", "mode", newMode);
+                    nextScreen(newMode);
                 }
             });
         }

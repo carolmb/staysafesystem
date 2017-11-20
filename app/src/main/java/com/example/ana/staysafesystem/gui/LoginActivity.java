@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.processor.Processor;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -15,12 +16,15 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Lista de amigos");
 
-        Button next = (Button) findViewById(R.id.login);
+        Processor.getInstance().initInternalMemory(this);
+
+        Button next = findViewById(R.id.login);
         next.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-            EditText numberEditText = (EditText) findViewById(R.id.userNumber);
-            EditText nameEditText = (EditText) findViewById(R.id.userName);
+            EditText numberEditText = findViewById(R.id.userNumber);
+            EditText nameEditText = findViewById(R.id.userName);
             String number = numberEditText.getText().toString();
             String name = nameEditText.getText().toString();
             if (!number.contentEquals("") && !name.contentEquals("")) {
@@ -28,8 +32,7 @@ public class LoginActivity extends AppCompatActivity {
                 Util.setPref(view.getContext(), "login", "userNumber", number);
                 Util.changeScreen(view.getContext(), UserModeActivity.class);
             } else {
-                Util.dialog("É necessário informar seu número celular e seu nome.",
-                        view.getContext());
+                Util.dialog(view.getContext(), "É necessário informar seu número celular e seu nome.");
             }
         }
         });

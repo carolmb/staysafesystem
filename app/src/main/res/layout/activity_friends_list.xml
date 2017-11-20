@@ -7,22 +7,40 @@
     tools:context="com.example.ana.staysafesystem.gui.FriendsListActivity">
 
     <ListView
-        android:id="@+id/listview1"
+        android:id="@+id/friendsList"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_below="@+id/button1"
+        android:layout_height="400dp"
+        android:layout_below="@+id/editList"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/saveList"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Click Here to load Contacts"
+        android:layout_marginTop="460dp"
+        android:text="Salvar modificações"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/listview1" />
+        app:layout_constraintTop_toTopOf="@+id/friendsList" />
+
+    <Button
+        android:id="@+id/editList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="412dp"
+        android:text="Editar contatos da lista"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/friendsList" />
 </android.support.constraint.ConstraintLayout>

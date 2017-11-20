@@ -16,9 +16,9 @@ public class AddFuncActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_func);
         setTitle("Adicionar funcionalidade");
 
-        final RadioButton msg = (RadioButton) findViewById(R.id.msg);
-        final RadioButton track = (RadioButton) findViewById(R.id.track);
-        final RadioButton call = (RadioButton) findViewById(R.id.call);
+        final RadioButton msg = findViewById(R.id.msg);
+        final RadioButton track = findViewById(R.id.track);
+        final RadioButton call = findViewById(R.id.call);
 
         msg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -49,7 +49,7 @@ public class AddFuncActivity extends AppCompatActivity {
                 } else if(call.isChecked()) {
                     Util.changeScreen(view.getContext(), CallFuncActivity.class);
                 } else {
-                    Util.dialog("É necessário selecionar uma função.", view.getContext());
+                    Util.dialog(view.getContext(), "É necessário selecionar uma função.");
                 }
             }
         });

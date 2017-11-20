@@ -7,10 +7,54 @@
     tools:context="com.example.ana.staysafesystem.gui.SettingsActivity">
 
     <Button
+        android:id="@+id/oldcalls"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="232dp"
+        android:layout_marginEnd="33dp"
+        android:layout_marginStart="33dp"
+        android:text="Chamados antigos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listfriends" />
+
+    <Button
         android:id="@+id/listfriends"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="19dp"
+        android:layout_marginEnd="33dp"
+        android:layout_marginStart="33dp"
+        android:text="Lista de amigos"
+        app:layout_constraintBottom_toTopOf="@+id/oldcalls"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImg" />
+
+    <ImageView
+        android:id="@+id/profileImg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="21dp"
+        android:layout_marginEnd="17dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="27dp"
+        android:src="@android:drawable/ic_menu_report_image"
+        app:layout_constraintBottom_toTopOf="@+id/listfriends"
+        app:layout_constraintEnd_toStartOf="@+id/profileName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/profileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="92dp"
-        tools:layout_editor_absoluteY="112dp" />
+        android:layout_marginEnd="116dp"
+        android:layout_marginTop="25dp"
+        android:text="TextView"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileImg"
+        app:layout_constraintTop_toTopOf="@+id/profileImg" />
 </android.support.constraint.ConstraintLayout>
