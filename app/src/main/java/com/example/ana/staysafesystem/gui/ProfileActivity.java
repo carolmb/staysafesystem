@@ -8,12 +8,12 @@ import android.widget.TextView;
 
 import com.example.ana.staysafesystem.R;
 
-public class SettingsActivity extends Activity {
+public class ProfileActivity extends Activity {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_settings);
+            setContentView(R.layout.activity_profile);
             Button button = findViewById(R.id.listfriends);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {

@@ -79,7 +79,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 break;
 
             case R.id.menuSettings:
-                Util.changeScreen(this, SettingsActivity.class);
+                Util.changeScreen(this, ProfileActivity.class);
                 break;
 
             case R.id.menuMode:

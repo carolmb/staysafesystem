@@ -1,6 +1,7 @@
 package com.example.ana.staysafesystem.gui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -8,11 +9,14 @@ import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ana.staysafesystem.R;
@@ -41,36 +45,63 @@ public class FriendsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_friends_list);
+        setTitle("Lista de amigos");
 
         listView = findViewById(R.id.friendsList);
+        enableRuntimePermission();
+        viewCurrentFriendsList();
+
+        allContacts = new ArrayList<>();
+
         editButton = findViewById(R.id.editList);
         saveButton = findViewById(R.id.saveList);
-        allContacts = new ArrayList<>();
-        enableRuntimePermission();
-
-        viewCurrentFriendsList();
+        saveButton.setVisibility(View.INVISIBLE);
 
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Button editButton = findViewById(R.id.editList);
+                editButton.setVisibility(View.INVISIBLE);
+                Button saveButton = findViewById(R.id.saveList);
+                saveButton.setVisibility(View.VISIBLE);
+
                 getContactsIntoArrayList();
                 // TODO check if users (friends list) has account in the system
-                arrayAdapter = new ArrayAdapter<>(
+                arrayAdapter = new ArrayAdapter<Person>(
                         view.getContext(),
                         R.layout.contact_list_item,
-                        allContacts
-                );
+                        allContacts) {
+                    @Override
+                    public View getView(final int position, View view, ViewGroup viewGroup) {
+                        LayoutInflater inflater = getLayoutInflater();
+                        View row;
+                        if (view == null) {
+                            inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        }
+                        row = inflater.inflate(R.layout.contact_list_item, viewGroup, false);
+
+                        Person person = allContacts.get(position);
+                        if(Processor.getInstance().isInCacheFriendsList(person)) {
+                            row.setBackgroundColor(Color.BLUE);// this set background color
+                        } else {
+                            row.setBackgroundColor(Color.WHITE);
+                        }
+                        TextView textView = row.findViewById(R.id.blatext);
+                        textView.setText(person.viewContactString());
+                        return row;
+                    }
+                };
 
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent,
                                             View view, int position, long id) {
-                        Person person = allContacts.get((int) id);
+                        Person person = allContacts.get(position);
                         Processor.getInstance().updateFriendInList(view.getContext(), person);
                         // swap color of item in listview
                         boolean isInCache = Processor.getInstance().isInCacheFriendsList(person);
                         int color = isInCache ? Color.BLUE : Color.WHITE;
-                        parent.getChildAt((int) id).setBackgroundColor(color);
+                        view.setBackgroundColor(color);
                     }
                 });
                 listView.setAdapter(arrayAdapter);
@@ -82,6 +113,10 @@ public class FriendsListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Processor.getInstance().saveCacheFriendsList(view.getContext());
                 viewCurrentFriendsList();
+                Button editList = findViewById(R.id.editList);
+                editList.setVisibility(View.VISIBLE);
+                Button saveList = findViewById(R.id.saveList);
+                saveList.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -112,11 +147,13 @@ public class FriendsListActivity extends AppCompatActivity {
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null,null, null, null);
 
+        allContacts.clear();
         while (cursor.moveToNext()) {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            if (phoneNumber.length() >= 8) {
-                allContacts.add(new Person(name, phoneNumber));
+            Person person = new Person(name, phoneNumber);
+            if (phoneNumber.length() >= 8 && !allContacts.contains(person)) {
+                allContacts.add(person);
             }
         }
         cursor.close();

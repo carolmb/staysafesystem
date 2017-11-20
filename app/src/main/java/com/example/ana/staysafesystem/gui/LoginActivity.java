@@ -15,8 +15,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setTitle("Lista de amigos");
+        setContentView(R.layout.activity_login);
 
         Processor.getInstance().initInternalMemory(this);
 

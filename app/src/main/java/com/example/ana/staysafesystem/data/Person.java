@@ -20,7 +20,7 @@ public class Person implements Serializable {
     }
 
     public String viewContactString() {
-        return "Nome: " + name + " Número: " + phoneNumber;
+        return "Nome: " + name + "\nNúmero: " + phoneNumber;
     }
 
     @Override
