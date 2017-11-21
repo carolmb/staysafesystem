@@ -1,5 +1,6 @@
 package com.example.ana.staysafesystem.gui;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,8 @@ public class CallFriendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("Ligação para amigo especial");
         setContentView(R.layout.activity_call_friend);
+        final int buttonId = getIntent().getIntExtra("buttonPressed", 0);
+
         Button callFriend = findViewById(R.id.callFriendFineshed);
         callFriend.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -29,6 +32,7 @@ public class CallFriendActivity extends AppCompatActivity {
                 }
                 Util.setPref(view.getContext(), "callFriend", "friendPhoneNumber", textView.toString());
                 Util.setPref(view.getContext(), "callFriend", "isRecorded", audioType);
+                Util.setPref(view.getContext(),"button", "b" + buttonId, "call");
                 Util.changeScreen(view.getContext(), ProtectedUserActivity.class);
             }
         });

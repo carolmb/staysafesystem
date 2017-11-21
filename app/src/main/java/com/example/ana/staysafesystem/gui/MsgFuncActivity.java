@@ -1,5 +1,6 @@
 package com.example.ana.staysafesystem.gui;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ public class MsgFuncActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_msg_func);
         setTitle("Configurações da mensagem");
+        final int buttonId = getIntent().getIntExtra("buttonPressed", 0);
 
         Button saveMsg = findViewById(R.id.finishedMsg);
         saveMsg.setOnClickListener(new View.OnClickListener() {
@@ -33,8 +35,10 @@ public class MsgFuncActivity extends AppCompatActivity {
                 Msg msg = new Msg(msgContent, local.isChecked(), heartbeat.isChecked(), fall.isChecked(), audio.isChecked());
 
                 Processor.getInstance().saveMsgFunc(view.getContext(), msg);
+                Util.setPref(view.getContext(), "button","b" + buttonId, "msg");
                 Util.changeScreen(view.getContext(), ProtectedUserActivity.class);
             }
+
         });
 
         Button editList = findViewById(R.id.editListShorcut);

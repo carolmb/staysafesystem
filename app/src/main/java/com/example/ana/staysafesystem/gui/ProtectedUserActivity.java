@@ -1,6 +1,7 @@
 package com.example.ana.staysafesystem.gui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,44 +22,55 @@ public class ProtectedUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_protected_user);
-        final SharedPreferences sharedPref = getSharedPreferences("Button", Context.MODE_PRIVATE);
-        final String b1 = sharedPref.getString("b1", null);
-        final String b2 = sharedPref.getString("b2", null);
+        String b1 = Util.getPref(this, "button", "b1");
+        String b2 = Util.getPref(this, "button", "b2");
 
-        TextView textView1 = (TextView) findViewById(R.id.func1);
-        ImageButton imageButton1 = (ImageButton) findViewById(R.id.imageButton1);
-        configButton(b1, textView1, imageButton1);
+        TextView textView1 = findViewById(R.id.func1);
+        ImageButton imageButton1 = findViewById(R.id.imageButton1);
+        configButton(b1, textView1, imageButton1, 1);
 
-        TextView textView2 = (TextView) findViewById(R.id.func2);
-        ImageButton imageButton2 = (ImageButton) findViewById(R.id.imageButton2);
-        configButton(b2, textView2, imageButton2);
+        TextView textView2 = findViewById(R.id.func2);
+        ImageButton imageButton2 = findViewById(R.id.imageButton2);
+        configButton(b2, textView2, imageButton2, 2);
     }
 
-    void configButton(String button, TextView textView, ImageButton imageButton) {
+    void configButton(String button, TextView textView, ImageButton imageButton, int id) {
         if(button != null) {
-            showFunc(button, textView, imageButton);
+            showFunc(button, textView, imageButton, id);
         } else {
-            nullFunc(textView, imageButton);
+            nullFunc(textView, imageButton, id);
         }
     }
 
-    void nullFunc(TextView textView, ImageButton imageButton) {
+    void nullFunc(TextView textView, ImageButton imageButton, final int id) {
         textView.setText("Não configurado");
         imageButton.setImageResource(android.R.drawable.ic_input_add);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Util.changeScreen(view.getContext(), AddFuncActivity.class);
+                Intent intent = new Intent(view.getContext(), AddFuncActivity.class);
+                intent.putExtra("buttonPressed", id);
+                view.getContext().startActivity(intent);
             }
         });
     }
 
-    void showFunc(String button, TextView textView, ImageButton imageButton) {
+    void showFunc(String button, TextView textView, ImageButton imageButton, final int id) {
         textView.setText(button);
-        imageButton.setImageResource(android.R.color.transparent);
-        imageButton.setImageResource(android.R.drawable.ic_menu_preferences);
+        imageButton.setImageResource(android.R.drawable.ic_menu_delete);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-
+                Util.setPref(view.getContext(), "button", "b" + id, null);
+                ImageButton imageButton;
+                TextView textView;
+                if(id == 1) {
+                    imageButton = findViewById(R.id.imageButton1);
+                    textView = findViewById(R.id.func1);
+                } else {
+                    imageButton = findViewById(R.id.imageButton2);
+                    textView = findViewById(R.id.func2);
+                }
+                nullFunc(textView, imageButton, id);
+                //imageButton.setImageResource(android.R.drawable.ic_input_add);
             }
         });
     }
