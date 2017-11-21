@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog;
  * Created by ana on 19/11/17.
  */
 
-public class Util {
+public class UtilGUI {
     public static void dialog(Context context, String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(msg);
@@ -21,19 +21,5 @@ public class Util {
     public static void changeScreen(Context context, Class<?> cls) {
         Intent myIntent = new Intent(context, cls);
         context.startActivity(myIntent);
-    }
-
-    public static void setPref(Context context, String pref, String field, String value) {
-        SharedPreferences sharedPref =
-                context.getSharedPreferences(pref, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPref.edit();
-        ed.putString(field, value);
-        ed.commit();
-    }
-
-    public static String getPref(Context context, String pref, String field) {
-        SharedPreferences sharedPref =
-                context.getSharedPreferences(pref, Context.MODE_PRIVATE);
-        return sharedPref.getString(field, null);
     }
 }

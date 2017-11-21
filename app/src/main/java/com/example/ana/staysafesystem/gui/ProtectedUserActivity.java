@@ -1,8 +1,6 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,36 +12,62 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.processor.Processor;
+
+import java.util.ArrayList;
 
 public class ProtectedUserActivity extends AppCompatActivity {
+
+    class FuncButton {
+        TextView description;
+        ImageButton img;
+    }
+
+    ArrayList<FuncButton> funcButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_protected_user);
-        String b1 = Util.getPref(this, "button", "b1");
-        String b2 = Util.getPref(this, "button", "b2");
 
-        TextView textView1 = findViewById(R.id.func1);
-        ImageButton imageButton1 = findViewById(R.id.imageButton1);
-        configButton(b1, textView1, imageButton1, 1);
+        setFuncButtons();
 
-        TextView textView2 = findViewById(R.id.func2);
-        ImageButton imageButton2 = findViewById(R.id.imageButton2);
-        configButton(b2, textView2, imageButton2, 2);
+        String func1 = Processor.getInstance().getButtonFunc(this, 1);
+        configButton(func1, 1);
+
+        String func2 = Processor.getInstance().getButtonFunc(this, 2);
+        configButton(func2, 2);
+
+        saveMeButtons();
     }
 
-    void configButton(String button, TextView textView, ImageButton imageButton, int id) {
-        if(button != null) {
-            showFunc(button, textView, imageButton, id);
+    private void setFuncButtons() {
+        funcButtons = new ArrayList<>();
+
+        FuncButton funcButton1 = new FuncButton();
+        funcButton1.description = findViewById(R.id.func1);
+        funcButton1.img = findViewById(R.id.imageButton1);
+        funcButtons.add(funcButton1);
+
+        FuncButton funcButton2 = new FuncButton();
+        funcButton2.description = findViewById(R.id.func2);
+        funcButton2.img = findViewById(R.id.imageButton2);
+        funcButtons.add(funcButton2);
+    }
+
+    void configButton(String func, int id) {
+        if(func != null) {
+            showFunc(func, id);
         } else {
-            nullFunc(textView, imageButton, id);
+            nullFunc(id);
         }
     }
 
-    void nullFunc(TextView textView, ImageButton imageButton, final int id) {
-        textView.setText("Não configurado");
+    void nullFunc(final int id) {
+        TextView description = funcButtons.get(id-1).description;
+        description.setText("Não configurado");
+
+        ImageButton imageButton = funcButtons.get(id-1).img;
         imageButton.setImageResource(android.R.drawable.ic_input_add);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -54,23 +78,16 @@ public class ProtectedUserActivity extends AppCompatActivity {
         });
     }
 
-    void showFunc(String button, TextView textView, ImageButton imageButton, final int id) {
-        textView.setText(button);
+    void showFunc(String func, final int id) {
+        TextView description = funcButtons.get(id-1).description;
+        description.setText(func);
+
+        ImageButton imageButton = funcButtons.get(id-1).img;
         imageButton.setImageResource(android.R.drawable.ic_menu_delete);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Util.setPref(view.getContext(), "button", "b" + id, null);
-                ImageButton imageButton;
-                TextView textView;
-                if(id == 1) {
-                    imageButton = findViewById(R.id.imageButton1);
-                    textView = findViewById(R.id.func1);
-                } else {
-                    imageButton = findViewById(R.id.imageButton2);
-                    textView = findViewById(R.id.func2);
-                }
-                nullFunc(textView, imageButton, id);
-                //imageButton.setImageResource(android.R.drawable.ic_input_add);
+                Processor.getInstance().setButtonFunc(view.getContext(), id, null);
+                nullFunc(id);
             }
         });
     }
@@ -85,30 +102,45 @@ public class ProtectedUserActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.menuAbout:
-                Toast.makeText(this,
-                        "Stay Safe System foi pensado com carinho para te ajudar.",
-                        Toast.LENGTH_SHORT).show();
+                UtilGUI.dialog(this,
+                        "Stay Safe System foi pensado com carinho para te ajudar.");
                 break;
 
             case R.id.menuSettings:
-                Util.changeScreen(this, ProfileActivity.class);
+                UtilGUI.changeScreen(this, ProfileActivity.class);
                 break;
 
             case R.id.menuMode:
                 // clean mode
-                Util.setPref(this, "mode", "mode", null);
-                Util.changeScreen(this, UserModeActivity.class);
+                Processor.getInstance().clearMode(this);
+                UtilGUI.changeScreen(this, UserModeActivity.class);
                 break;
 
             case R.id.menuLogout:
                 // logout + clean mode
-                Util.setPref(this, "login", "userName", null);
-                Util.setPref(this, "login", "userNumber", null);
-                Util.setPref(this, "mode", "mode", null);
-                Util.changeScreen(this, LoginActivity.class);
+                Processor.getInstance().logout(this);
+                UtilGUI.changeScreen(this, LoginActivity.class);
                 break;
 
         }
         return true;
     }
+
+    void saveMeButtons() {
+        ImageButton helpMe1 = findViewById(R.id.helpMe1);
+        helpMe1.setOnClickListener( new View.OnClickListener() {
+            public void onClick(View view) {
+                UtilGUI.dialog(view.getContext(), "Deu certo.");
+                Processor.getInstance().buttonPressed(1);
+            }
+        });
+
+        ImageButton helpMe2 = findViewById(R.id.helpMe1);
+        helpMe2.setOnClickListener( new View.OnClickListener() {
+            public void onClick(View view) {
+                Processor.getInstance().buttonPressed(2);
+            }
+        });
+    }
+
 }

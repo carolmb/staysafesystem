@@ -1,6 +1,5 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.processor.Processor;
 
 public class CallFriendActivity extends AppCompatActivity {
 
@@ -23,17 +23,21 @@ public class CallFriendActivity extends AppCompatActivity {
         callFriend.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 TextView textView = findViewById(R.id.friendPhoneNumber);
-                RadioButton radioButton = findViewById(R.id.recordedAudio);
-                String audioType = null;
-                if(radioButton.isChecked()) {
-                    audioType = "recorded";
+                String phone = textView.getText().toString();
+                if(phone.length() >= 8) {
+                    RadioButton radioButton = findViewById(R.id.recordedAudio);
+                    String audioType;
+                    if (radioButton.isChecked()) {
+                        audioType = "recorded";
+                    } else {
+                        audioType = "live";
+                    }
+                    Processor.getInstance().setCallFriend(view.getContext(), phone, audioType);
+                    Processor.getInstance().setButtonFunc(view.getContext(), buttonId, "call");
+                    UtilGUI.changeScreen(view.getContext(), ProtectedUserActivity.class);
                 } else {
-                    audioType = "live";
+                    UtilGUI.dialog(view.getContext(), "Você deve inserir um telefone válido.");
                 }
-                Util.setPref(view.getContext(), "callFriend", "friendPhoneNumber", textView.toString());
-                Util.setPref(view.getContext(), "callFriend", "isRecorded", audioType);
-                Util.setPref(view.getContext(),"button", "b" + buttonId, "call");
-                Util.changeScreen(view.getContext(), ProtectedUserActivity.class);
             }
         });
     }

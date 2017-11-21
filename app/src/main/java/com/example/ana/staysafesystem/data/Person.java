@@ -15,12 +15,25 @@ public class Person implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public String toString() {
         return name;
     }
 
     public String viewContactString() {
         return "Nome: " + name + "\nNúmero: " + phoneNumber;
+    }
+
+    public boolean isValid() {
+        return name != null && phoneNumber != null &&
+                name.length() > 0 && phoneNumber.length() > 0;
     }
 
     @Override

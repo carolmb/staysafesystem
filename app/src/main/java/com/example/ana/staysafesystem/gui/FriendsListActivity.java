@@ -39,8 +39,8 @@ public class FriendsListActivity extends AppCompatActivity {
     public  static final int RequestPermissionCode  = 1 ;
     Button editButton; // edit friends list
     Button saveButton;
-    @Override
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -136,7 +136,7 @@ public class FriendsListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent,
                                     View view, int position, long id) {
                 Person person = currentFriends.get((int)id);
-                Util.dialog(view.getContext(), person.viewContactString());
+                UtilGUI.dialog(view.getContext(), person.viewContactString());
             }
         });
         listView.setAdapter(arrayAdapter);
@@ -175,7 +175,7 @@ public class FriendsListActivity extends AppCompatActivity {
         switch (RC) {
             case RequestPermissionCode:
                 if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Util.dialog(this, "Esse aplicativo não tem permissão para " +
+                    UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
                             "acessar seus contatos.");
                 }
                 break;

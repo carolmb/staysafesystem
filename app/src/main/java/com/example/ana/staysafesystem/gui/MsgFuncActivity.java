@@ -1,6 +1,5 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,17 +25,22 @@ public class MsgFuncActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 TextView textView = findViewById(R.id.msgDescription);
-                String msgContent = textView.toString();
+                String msgContent = textView.getText().toString();
+                if(msgContent.length() > 0) {
 
-                CheckBox local = findViewById(R.id.local);
-                CheckBox heartbeat = findViewById(R.id.heartbeat);
-                CheckBox fall = findViewById(R.id.fall);
-                CheckBox audio = findViewById(R.id.audio);
-                Msg msg = new Msg(msgContent, local.isChecked(), heartbeat.isChecked(), fall.isChecked(), audio.isChecked());
+                    CheckBox local = findViewById(R.id.local);
+                    CheckBox heartbeat = findViewById(R.id.heartbeat);
+                    CheckBox fall = findViewById(R.id.fall);
+                    CheckBox audio = findViewById(R.id.audio);
+                    Msg msg = new Msg(msgContent,
+                            local.isChecked(), heartbeat.isChecked(), fall.isChecked(), audio.isChecked());
 
-                Processor.getInstance().saveMsgFunc(view.getContext(), msg);
-                Util.setPref(view.getContext(), "button","b" + buttonId, "msg");
-                Util.changeScreen(view.getContext(), ProtectedUserActivity.class);
+                    Processor.getInstance().setMsgSettings(view.getContext(), msg);
+                    Processor.getInstance().setButtonFunc(view.getContext(), buttonId, "msg");
+                    UtilGUI.changeScreen(view.getContext(), ProtectedUserActivity.class);
+                } else {
+                    UtilGUI.dialog(view.getContext(), "Você deve inserir uma mensagem.");
+                }
             }
 
         });
@@ -45,7 +49,7 @@ public class MsgFuncActivity extends AppCompatActivity {
         editList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Util.changeScreen(view.getContext(), FriendsListActivity.class);
+                UtilGUI.changeScreen(view.getContext(), FriendsListActivity.class);
             }
         });
 

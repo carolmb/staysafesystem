@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.data.Person;
+import com.example.ana.staysafesystem.processor.Processor;
 
 public class ProfileActivity extends Activity {
 
@@ -17,12 +19,12 @@ public class ProfileActivity extends Activity {
             Button button = findViewById(R.id.listfriends);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    Util.changeScreen(view.getContext(), FriendsListActivity.class);
+                    UtilGUI.changeScreen(view.getContext(), FriendsListActivity.class);
                 }
             });
             TextView textView = findViewById(R.id.profileName);
-            String userName = Util.getPref(this, "login", "userName");
-            textView.setText(userName);
+            Person user = Processor.getInstance().getProtectedUser(this);
+            textView.setText(user.toString());
         }
 
 }
