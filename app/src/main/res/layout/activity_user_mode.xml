@@ -4,44 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ana.staysafesystem.gui.UserModeActivity">
+    tools:context="com.example.ana.staysafesystem.gui.UserModeActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <Button
         android:id="@+id/guardian"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="283dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginStart="5dp"
-        android:text="Protetor"
+        android:layout_marginBottom="204dp"
+        android:text="Guardião"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/secure"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/modo" />
+        app:layout_constraintTop_toBottomOf="@+id/secure" />
 
     <Button
         android:id="@+id/secure"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="283dp"
+        android:layout_marginBottom="10dp"
         android:text="Protegido"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/guardian"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/guardian"
-        app:layout_constraintTop_toBottomOf="@+id/modo"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/modo" />
 
     <TextView
         android:id="@+id/modo"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginBottom="31dp"
-        android:layout_marginStart="3dp"
+        android:layout_marginBottom="52dp"
         android:layout_marginTop="124dp"
         android:text="Selecione o modo de uso:"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/guardian"
-        app:layout_constraintStart_toStartOf="@+id/guardian"
+        app:layout_constraintBottom_toTopOf="@+id/secure"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

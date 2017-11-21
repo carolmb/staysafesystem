@@ -4,21 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ana.staysafesystem.gui.LoginActivity">
+    tools:context="com.example.ana.staysafesystem.gui.LoginActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <Button
         android:id="@+id/login"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="Login"
+        android:layout_marginBottom="1dp"
+        android:text="Entrar"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userNumber" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/userName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="182dp"
         android:contentDescription="nome"
@@ -31,25 +33,26 @@
 
     <EditText
         android:id="@+id/userNumber"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="29dp"
         android:contentDescription="número celular"
         android:ems="10"
         android:hint="número celular"
         android:inputType="phone"
-        app:layout_constraintStart_toStartOf="@+id/userName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userName" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:layout_marginStart="38dp"
+        android:layout_marginBottom="26dp"
         android:contentDescription="bem vindo ao 3S!"
         android:text="Bem vindo ao 3S!"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/userName"
-        app:layout_constraintStart_toStartOf="@+id/userName" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

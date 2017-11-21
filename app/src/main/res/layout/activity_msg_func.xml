@@ -6,4 +6,96 @@
     android:layout_height="match_parent"
     tools:context="com.example.ana.staysafesystem.gui.MsgFuncActivity">
 
+    <TextView
+        android:id="@+id/msgDescription"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="25dp"
+        android:text="Mensagem que você gostaria de enviar aos seus amigos:"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/msg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/msg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="13dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginStart="11dp"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/local"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msgDescription" />
+
+    <CheckBox
+        android:id="@+id/local"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Localização"
+        app:layout_constraintBottom_toTopOf="@+id/heartbeat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msg" />
+
+    <CheckBox
+        android:id="@+id/heartbeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Batimento cardíaco"
+        app:layout_constraintBottom_toTopOf="@+id/fall"
+        app:layout_constraintStart_toStartOf="@+id/local"
+        app:layout_constraintTop_toBottomOf="@+id/local" />
+
+    <CheckBox
+        android:id="@+id/fall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Queda"
+        app:layout_constraintBottom_toTopOf="@+id/audio"
+        app:layout_constraintStart_toStartOf="@+id/heartbeat"
+        app:layout_constraintTop_toBottomOf="@+id/heartbeat" />
+
+    <CheckBox
+        android:id="@+id/audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="69dp"
+        android:text="Áudio"
+        app:layout_constraintBottom_toTopOf="@+id/editListShorcut"
+        app:layout_constraintStart_toStartOf="@+id/fall"
+        app:layout_constraintTop_toBottomOf="@+id/fall" />
+
+    <Button
+        android:id="@+id/editListShorcut"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Editar lista de Amigos"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/finishedMsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/audio" />
+
+    <Button
+        android:id="@+id/finishedMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:text="Pronto"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editListShorcut" />
+
 </android.support.constraint.ConstraintLayout>

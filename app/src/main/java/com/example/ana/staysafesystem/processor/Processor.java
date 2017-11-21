@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.ana.staysafesystem.data.DataInternalStorage;
+import com.example.ana.staysafesystem.data.Msg;
 import com.example.ana.staysafesystem.data.Person;
 
 import java.util.ArrayList;
@@ -15,11 +16,13 @@ import java.util.ArrayList;
 public class Processor {
 
     DataInternalStorage<ArrayList<Person>> internalStorageFriends;
+    DataInternalStorage<Msg> internalStorageMsgSettings;
     ArrayList<Person> cacheFriendsList;
 
     static private Processor instance;
     private Processor() {
-        internalStorageFriends = new DataInternalStorage<ArrayList<Person>>("friendsList");
+        internalStorageFriends = new DataInternalStorage<>("friendsList");
+        internalStorageMsgSettings = new DataInternalStorage<>("msgSettings");
     }
 
     static public Processor getInstance() {
@@ -60,5 +63,13 @@ public class Processor {
 
     public void saveCacheFriendsList(Context context) {
         internalStorageFriends.saveObj(context, cacheFriendsList);
+    }
+
+    public void saveMsgFunc(Context context, Msg msgSettings) {
+        internalStorageMsgSettings.saveObj(context, msgSettings);
+    }
+
+    public Msg getMsgSettings(Context context) {
+        return internalStorageMsgSettings.getObj(context);
     }
 }
