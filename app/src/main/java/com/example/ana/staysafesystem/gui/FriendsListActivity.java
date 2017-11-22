@@ -36,7 +36,7 @@ public class FriendsListActivity extends AppCompatActivity {
     ArrayAdapter<Person> arrayAdapter;
     Cursor cursor;
     String name, phoneNumber;
-    public  static final int RequestPermissionCode  = 1 ;
+    public  static final int RequestPermissionCode = 1;
     Button editButton; // edit friends list
     Button saveButton;
 

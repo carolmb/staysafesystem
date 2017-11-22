@@ -1,6 +1,9 @@
 package com.example.ana.staysafesystem.gui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +17,10 @@ import android.widget.Toast;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.Processor;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class ProtectedUserActivity extends AppCompatActivity {
@@ -22,14 +29,14 @@ public class ProtectedUserActivity extends AppCompatActivity {
         TextView description;
         ImageButton img;
     }
-
+    public  static final int RequestPermissionCode = 1;
     ArrayList<FuncButton> funcButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_protected_user);
-
+        enableRuntimePermission();
         setFuncButtons();
 
         String func1 = Processor.getInstance().getButtonFunc(this, 1);
@@ -127,20 +134,44 @@ public class ProtectedUserActivity extends AppCompatActivity {
     }
 
     void saveMeButtons() {
-        ImageButton helpMe1 = findViewById(R.id.helpMe1);
+        ImageButton helpMe1 = findViewById(R.id.helpMe);
         helpMe1.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
-                UtilGUI.dialog(view.getContext(), "Deu certo.");
+                UtilGUI.dialog(view.getContext(), "Deu certo 1.");
                 Processor.getInstance().buttonPressed(1);
             }
         });
 
-        ImageButton helpMe2 = findViewById(R.id.helpMe1);
+        ImageButton helpMe2 = findViewById(R.id.helpMe11);
         helpMe2.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
+                UtilGUI.dialog(view.getContext(), "Deu certo 2.");
                 Processor.getInstance().buttonPressed(2);
             }
         });
+    }
+
+    public void enableRuntimePermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.INTERNET)) {
+            Toast.makeText(this,"Essa permissão é para usarmos a internet.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.INTERNET}, RequestPermissionCode);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
+        switch (RC) {
+            case RequestPermissionCode:
+                if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
+                    UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
+                            "acessar seus contatos.");
+                }
+                break;
+        }
     }
 
 }

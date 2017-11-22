@@ -78,13 +78,25 @@ public class Processor {
         return internalStorageMsgSettings.getObj(context);
     }
 
-    public void buttonPressed(int id) {
+    public void buttonPressed(final int id) {
         switch (id) {
             case 1:
-                doAction(id);
+                Thread t1 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doAction(id);
+                    }
+                });
+                t1.start();
                 break;
             case 2:
-                doAction(id);
+                Thread t2 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doAction(id);
+                    }
+                });
+                t2.start();
                 break;
         }
     }
