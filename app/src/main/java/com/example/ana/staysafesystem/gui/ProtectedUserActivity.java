@@ -17,10 +17,6 @@ import android.widget.Toast;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.Processor;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class ProtectedUserActivity extends AppCompatActivity {
@@ -36,6 +32,8 @@ public class ProtectedUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_protected_user);
+        setTitle("3S - Protegido");
+
         enableRuntimePermission();
         setFuncButtons();
 
@@ -87,7 +85,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
 
     void showFunc(String func, final int id) {
         TextView description = funcButtons.get(id-1).description;
-        description.setText(func);
+        description.setText(getPrettyName(func));
 
         ImageButton imageButton = funcButtons.get(id-1).img;
         imageButton.setImageResource(android.R.drawable.ic_menu_delete);
@@ -97,6 +95,18 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 nullFunc(id);
             }
         });
+    }
+
+    private String getPrettyName(String funcCode) {
+        String prettyName = null;
+        if(funcCode.contentEquals("call")) {
+            prettyName = "Ligar para contato especial";
+        } else if(funcCode.contentEquals("track")) {
+            prettyName = "Ratrear aparelho";
+        } else if(funcCode.contentEquals("msg")) {
+            prettyName = "Mensagem para amigos";
+        }
+        return prettyName;
     }
 
     @Override
@@ -113,7 +123,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
                         "Stay Safe System foi pensado com carinho para te ajudar.");
                 break;
 
-            case R.id.menuSettings:
+            case R.id.menuProfile:
                 UtilGUI.changeScreen(this, ProfileActivity.class);
                 break;
 

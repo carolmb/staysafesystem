@@ -2,18 +2,27 @@ package com.example.ana.staysafesystem.processor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.DataInternalStorage;
 import com.example.ana.staysafesystem.data.Msg;
 import com.example.ana.staysafesystem.data.Person;
+import com.example.ana.staysafesystem.gui.FriendAskingHelpActivity;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by ana on 19/11/17.
@@ -117,14 +126,71 @@ public class Processor {
         }
     }
 
+    public void waitServerMsg(final Context context) {
+        String msgContent = "Estou precisando de ajuda!!!" +
+                "\nPor favor me encontre encontre em tal lugar!";
+        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
+        //createNotification(context, fakeMsg);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerSocket server = new ServerSocket(5561);
+                    System.out.println(server.getLocalSocketAddress());
+
+                    while(true){
+                        Socket socket = server.accept();
+                        Scanner scanner = new Scanner(socket.getInputStream());
+                        createNotification(context, fakeMsg);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Deu ruim.");
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+    }
+
+    private void createNotification(Context context, Msg msg) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.help)
+                        .setContentTitle("Seu amigo está pedindo ajuda")
+                        .setContentText("Me ajuda, por favor!");
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(context, FriendAskingHelpActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(FriendAskingHelpActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(999, mBuilder.build());
+    }
+
     public void clearMode(Context context) {
         setPref(context, "mode", "mode", null);
     }
 
     public void logout(Context context) {
-        setPref(context, "login", "userName", null);
-        setPref(context, "login", "userNumber", null);
-        setPref(context, "mode", "mode", null);
+        setProtectedUser(context, new Person(null, null));
+        setUserMode(context, null);
+        setButtonFunc(context, 1, null);
+        setButtonFunc(context, 2, null);
     }
 
     public String getButtonFunc(Context context, int id) {

@@ -17,7 +17,7 @@ public class MsgFuncActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_msg_func);
-        setTitle("Configurações da mensagem");
+        setTitle("Mensagem");
         final int buttonId = getIntent().getIntExtra("buttonPressed", 0);
 
         Button saveMsg = findViewById(R.id.finishedMsg);

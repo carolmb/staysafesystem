@@ -5,7 +5,7 @@
         android:title="Sobre" />
 
     <item
-        android:id="@+id/menuSettings"
+        android:id="@+id/menuProfile"
         android:title="Perfil" />
 
     <item

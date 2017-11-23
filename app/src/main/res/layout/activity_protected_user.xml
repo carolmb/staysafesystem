@@ -12,7 +12,7 @@
         android:id="@+id/callDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="3dp"
         android:contentDescription="Adicionar funcão"
         android:text="Botão 2"
         android:textAllCaps="true"
@@ -24,7 +24,7 @@
         android:id="@+id/editList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="3dp"
         android:layout_marginTop="16dp"
         android:text="Botão 1"
         android:textAllCaps="true"
@@ -54,18 +54,17 @@
         android:id="@+id/func1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
         android:text="TextView"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/editList"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/editList"
+        app:layout_constraintStart_toEndOf="@+id/editList" />
 
     <TextView
         android:id="@+id/func2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="21dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="27dp"
         android:text="TextView"
         android:textSize="18sp"
@@ -74,23 +73,26 @@
 
     <ImageButton
         android:id="@+id/helpMe"
-        android:layout_width="70dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="110dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginStart="96dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="@+id/helpMe11"
+        app:layout_constraintEnd_toStartOf="@+id/helpMe11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/helpMe11"
         app:srcCompat="@mipmap/help" />
 
     <ImageButton
         android:id="@+id/helpMe11"
-        android:layout_width="70dp"
+        android:layout_width="0dp"
         android:layout_height="75dp"
-        android:layout_marginBottom="193dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginEnd="107dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/helpMe"
         app:srcCompat="@mipmap/help" />
 

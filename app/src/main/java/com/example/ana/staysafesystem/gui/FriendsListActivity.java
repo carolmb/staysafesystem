@@ -25,10 +25,9 @@ import com.example.ana.staysafesystem.processor.Processor;
 
 import java.util.ArrayList;
 
-/* Code from:
+/* Code adapted from:
 * https://www.android-examples.com/get-show-all-phone-contacts-into-listview-in-android/
 * */
-
 public class FriendsListActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<Person> allContacts;
@@ -82,12 +81,14 @@ public class FriendsListActivity extends AppCompatActivity {
 
                         Person person = allContacts.get(position);
                         if(Processor.getInstance().isInCacheFriendsList(person)) {
-                            row.setBackgroundColor(Color.BLUE);// this set background color
+                            float[] green = {143.4f, 0.88f, 0.88f};
+                            row.setBackgroundColor(Color.HSVToColor(green));// this set background color
                         } else {
                             row.setBackgroundColor(Color.WHITE);
                         }
-                        TextView textView = row.findViewById(R.id.blatext);
-                        textView.setText(person.viewContactString());
+                        TextView textView = row.findViewById(R.id.itemContent);
+                        //textView.setText(person.viewContactString());
+                        textView.setText(person.toString());
                         return row;
                     }
                 };
@@ -100,7 +101,8 @@ public class FriendsListActivity extends AppCompatActivity {
                         Processor.getInstance().updateFriendInList(view.getContext(), person);
                         // swap color of item in listview
                         boolean isInCache = Processor.getInstance().isInCacheFriendsList(person);
-                        int color = isInCache ? Color.BLUE : Color.WHITE;
+                        float[] green = {143.4f, 0.88f, 0.88f};
+                        int color = isInCache ? Color.HSVToColor(green) : Color.WHITE;
                         view.setBackgroundColor(color);
                     }
                 });
