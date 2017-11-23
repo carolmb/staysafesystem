@@ -87,13 +87,16 @@ public class Processor {
         return internalStorageMsgSettings.getObj(context);
     }
 
-    public void buttonPressed(final int id) {
+    public void buttonPressed(final Context context, final int id) {
         switch (id) {
             case 1:
                 Thread t1 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        doAction(id);
+                        String msgContent = "Estou precisando de ajuda!!!" +
+                                "\nPor favor me encontre encontre em tal lugar!";
+                        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
+                        createNotification(context, fakeMsg);
                     }
                 });
                 t1.start();
@@ -102,7 +105,10 @@ public class Processor {
                 Thread t2 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        doAction(id);
+                        String msgContent = "Estou precisando de ajuda!!!" +
+                                "\nPor favor me encontre encontre em tal lugar!";
+                        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
+                        createNotification(context, fakeMsg);
                     }
                 });
                 t2.start();
@@ -127,10 +133,6 @@ public class Processor {
     }
 
     public void waitServerMsg(final Context context) {
-        String msgContent = "Estou precisando de ajuda!!!" +
-                "\nPor favor me encontre encontre em tal lugar!";
-        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
-        //createNotification(context, fakeMsg);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,7 +143,7 @@ public class Processor {
                     while(true){
                         Socket socket = server.accept();
                         Scanner scanner = new Scanner(socket.getInputStream());
-                        createNotification(context, fakeMsg);
+                        //createNotification(context, fakeMsg);
                     }
                 } catch (IOException e) {
                     System.out.println("Deu ruim.");
@@ -176,6 +178,7 @@ public class Processor {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
         mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setAutoCancel(true);
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.

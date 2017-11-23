@@ -148,7 +148,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
         helpMe1.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
                 UtilGUI.dialog(view.getContext(), "Deu certo 1.");
-                Processor.getInstance().buttonPressed(1);
+                Processor.getInstance().buttonPressed(view.getContext(), 1);
             }
         });
 
@@ -156,7 +156,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
         helpMe2.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
                 UtilGUI.dialog(view.getContext(), "Deu certo 2.");
-                Processor.getInstance().buttonPressed(2);
+                Processor.getInstance().buttonPressed(view.getContext(), 2);
             }
         });
     }
