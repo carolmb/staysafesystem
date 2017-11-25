@@ -15,6 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light">
+
+        <service android:name=".processor.LocalService"
+            android:process=":remote"/>
+
         android:debuggable="true"
         <activity android:name=".gui.UserModeActivity">
             <intent-filter>

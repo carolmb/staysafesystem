@@ -40,7 +40,6 @@ public class Processor {
 
     String serverIp = "192.168.0.108";
     int serverPort = 5555;
-    int clientPort = 5561;
 
     static private Processor instance;
     private Processor() {
@@ -162,63 +161,6 @@ public class Processor {
             }
         });
         t.start();
-    }
-
-    public void waitServerMsg(final Context context) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ServerSocket server = new ServerSocket(clientPort);
-
-                    while(true){
-                        Socket socket = server.accept();
-                        Scanner scanner = new Scanner(socket.getInputStream());
-                        String msg = scanner.nextLine();
-                        JSONObject json = new JSONObject(msg);
-                        createNotification(context, new Msg(json));
-                    }
-                } catch (IOException e) {
-                    System.out.println("Deu ruim.");
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
-    }
-
-    private void createNotification(Context context, Msg msg) {
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.help)
-                        .setContentTitle(msg.getTitle())
-                        .setContentText(msg.getSubtitle());
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(context, FriendAskingHelpActivity.class);
-        resultIntent.putExtra("contentMsg", msg.getContent());
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(FriendAskingHelpActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        mBuilder.setAutoCancel(true);
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(999, mBuilder.build());
     }
 
     public void clearMode(Context context) {
