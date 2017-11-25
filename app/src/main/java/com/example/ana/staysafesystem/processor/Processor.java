@@ -17,9 +17,14 @@ import android.util.Log;
 
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.DataInternalStorage;
+import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.data.Msg;
 import com.example.ana.staysafesystem.data.Person;
+import com.example.ana.staysafesystem.data.SensorsInfo;
 import com.example.ana.staysafesystem.gui.FriendAskingHelpActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -30,8 +35,12 @@ import java.util.Scanner;
 public class Processor {
 
     DataInternalStorage<ArrayList<Person>> internalStorageFriends;
-    DataInternalStorage<Msg> internalStorageMsgSettings;
+    DataInternalStorage<MetaMsg> internalStorageMsgSettings;
     ArrayList<Person> cacheFriendsList;
+
+    String serverIp = "192.168.0.108";
+    int serverPort = 5555;
+    int clientPort = 5561;
 
     static private Processor instance;
     private Processor() {
@@ -50,7 +59,19 @@ public class Processor {
 
     public void initInternalMemory(Context context) {
         internalStorageFriends.saveObj(context, new ArrayList<Person>());
-        Log.d("bla", "bla");
+        loginServer(getProtectedUser(context));
+    }
+
+    private void loginServer(Person p) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("action", ACTION.LOGIN);
+            json.put("name", p.getName());
+            json.put("phone", p.getPhoneNumber());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendSocket(serverIp, serverPort, json.toString());
     }
 
     public ArrayList<Person> getCurrentFriendsList(Context context) {
@@ -79,57 +100,68 @@ public class Processor {
         internalStorageFriends.saveObj(context, cacheFriendsList);
     }
 
-    public void setMsgSettings(Context context, Msg msgSettings) {
+    public void setMsgSettings(Context context, MetaMsg msgSettings) {
         internalStorageMsgSettings.saveObj(context, msgSettings);
     }
 
-    private Msg getMsgSettings(Context context) {
+    private MetaMsg getMsgSettings(Context context) {
         return internalStorageMsgSettings.getObj(context);
     }
 
-    public void buttonPressed(final Context context, final int id) {
-        switch (id) {
-            case 1:
-                Thread t1 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msgContent = "Estou precisando de ajuda!!!" +
-                                "\nPor favor me encontre encontre em tal lugar!";
-                        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
-                        createNotification(context, fakeMsg);
-                    }
-                });
-                t1.start();
-                break;
-            case 2:
-                Thread t2 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String msgContent = "Estou precisando de ajuda!!!" +
-                                "\nPor favor me encontre encontre em tal lugar!";
-                        final Msg fakeMsg = new Msg(msgContent, true, true, true, true);
-                        createNotification(context, fakeMsg);
-                    }
-                });
-                t2.start();
-                break;
+    public void buttonPressed(Context context, JSONObject json) {
+        int buttonId = -1;
+        try {
+            buttonId = json.getInt("buttonId");
+            String buttonFunc = getButtonFunc(context, buttonId);
+            doAction(context, buttonFunc, json);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    private void doAction(int id) {
-        try {
-            Socket soc = new Socket("192.168.0.108", 5560);
-            PrintWriter writer = new PrintWriter(soc.getOutputStream());
-            writer.write("Teste" + id);
-            writer.flush();
-            writer.close();
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private void doAction(Context context, String func, JSONObject json) {
+        if(func.contentEquals("msg")) {
+            sendMsg(context, json);
+        } else if(func.contentEquals("call")) {
+            callFriend();
+        } else if(func.contentEquals("track")) {
+            // TODO
         }
+    }
+
+    private void sendMsg(Context context, JSONObject json) {
+        SensorsInfo sensorsInfo = new SensorsInfo(json);
+        MetaMsg metaMsg = getMsgSettings(context);
+        Person user = getProtectedUser(context);
+        ArrayList<Person> friends = getCurrentFriendsList(context);
+        final Msg msg = new Msg(user, sensorsInfo, metaMsg, friends);
+        sendSocket(serverIp, serverPort, msg.toJson().toString());
+    }
+
+    private void callFriend() {
+        // TODO
+    }
+
+    private void sendSocket(final String ip, final int port, final String content) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket soc = new Socket(ip, port);
+                    PrintWriter writer = new PrintWriter(soc.getOutputStream());
+                    writer.write(content);
+                    writer.flush();
+                    writer.close();
+                } catch (UnknownHostException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
     }
 
     public void waitServerMsg(final Context context) {
@@ -137,16 +169,19 @@ public class Processor {
             @Override
             public void run() {
                 try {
-                    ServerSocket server = new ServerSocket(5561);
-                    System.out.println(server.getLocalSocketAddress());
+                    ServerSocket server = new ServerSocket(clientPort);
 
                     while(true){
                         Socket socket = server.accept();
                         Scanner scanner = new Scanner(socket.getInputStream());
-                        //createNotification(context, fakeMsg);
+                        String msg = scanner.nextLine();
+                        JSONObject json = new JSONObject(msg);
+                        createNotification(context, new Msg(json));
                     }
                 } catch (IOException e) {
                     System.out.println("Deu ruim.");
+                    e.printStackTrace();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -158,10 +193,11 @@ public class Processor {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(R.mipmap.help)
-                        .setContentTitle("Seu amigo está pedindo ajuda")
-                        .setContentText("Me ajuda, por favor!");
+                        .setContentTitle(msg.getTitle())
+                        .setContentText(msg.getSubtitle());
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(context, FriendAskingHelpActivity.class);
+        resultIntent.putExtra("contentMsg", msg.getContent());
 
         // The stack builder object will contain an artificial back stack for the
         // started Activity.

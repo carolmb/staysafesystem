@@ -20,8 +20,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         setTitle("3S - StaySafeSystem");
 
-        Processor.getInstance().initInternalMemory(this);
-
         Button next = findViewById(R.id.login);
         next.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -35,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
                 Person user = new Person(name, phone);
                 if (user.isValid()) {
                     Processor.getInstance().setProtectedUser(context, user);
+                    Processor.getInstance().initInternalMemory(view.getContext());
+
                     UtilGUI.changeScreen(context, UserModeActivity.class);
                 } else {
                     UtilGUI.dialog(context,

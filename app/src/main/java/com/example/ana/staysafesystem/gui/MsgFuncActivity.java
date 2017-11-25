@@ -2,14 +2,16 @@ package com.example.ana.staysafesystem.gui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.processor.Processor;
-import com.example.ana.staysafesystem.data.Msg;
 
 public class MsgFuncActivity extends AppCompatActivity {
 
@@ -24,18 +26,18 @@ public class MsgFuncActivity extends AppCompatActivity {
         saveMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView textView = findViewById(R.id.msgDescription);
-                String msgContent = textView.getText().toString();
+                EditText editText = findViewById(R.id.metaMsg);
+                String msgContent = editText.getText().toString();
                 if(msgContent.length() > 0) {
 
                     CheckBox local = findViewById(R.id.local);
                     CheckBox heartbeat = findViewById(R.id.heartbeat);
                     CheckBox fall = findViewById(R.id.fall);
                     CheckBox audio = findViewById(R.id.audio);
-                    Msg msg = new Msg(msgContent,
+                    MetaMsg metaMsg = new MetaMsg(msgContent,
                             local.isChecked(), heartbeat.isChecked(), fall.isChecked(), audio.isChecked());
 
-                    Processor.getInstance().setMsgSettings(view.getContext(), msg);
+                    Processor.getInstance().setMsgSettings(view.getContext(), metaMsg);
                     Processor.getInstance().setButtonFunc(view.getContext(), buttonId, "msg");
                     UtilGUI.changeScreen(view.getContext(), ProtectedUserActivity.class);
                 } else {

@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.Processor;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class ProtectedUserActivity extends AppCompatActivity {
@@ -102,7 +105,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
         if(funcCode.contentEquals("call")) {
             prettyName = "Ligar para contato especial";
         } else if(funcCode.contentEquals("track")) {
-            prettyName = "Ratrear aparelho";
+            prettyName = "Rastrear aparelho";
         } else if(funcCode.contentEquals("msg")) {
             prettyName = "Mensagem para amigos";
         }
@@ -148,7 +151,15 @@ public class ProtectedUserActivity extends AppCompatActivity {
         helpMe1.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
                 UtilGUI.dialog(view.getContext(), "Deu certo 1.");
-                Processor.getInstance().buttonPressed(view.getContext(), 1);
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("heart", 0);
+                    json.put("local", "bla");
+                    json.put("buttonId", 1);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Processor.getInstance().buttonPressed(view.getContext(), json);
             }
         });
 
@@ -156,7 +167,15 @@ public class ProtectedUserActivity extends AppCompatActivity {
         helpMe2.setOnClickListener( new View.OnClickListener() {
             public void onClick(View view) {
                 UtilGUI.dialog(view.getContext(), "Deu certo 2.");
-                Processor.getInstance().buttonPressed(view.getContext(), 2);
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("heart", 0);
+                    json.put("local", "bla");
+                    json.put("buttonId", 1);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Processor.getInstance().buttonPressed(view.getContext(), json);
             }
         });
     }
@@ -178,7 +197,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
             case RequestPermissionCode:
                 if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
                     UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
-                            "acessar seus contatos.");
+                            "usar Internet.");
                 }
                 break;
         }

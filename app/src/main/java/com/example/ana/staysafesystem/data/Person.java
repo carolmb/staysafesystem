@@ -1,7 +1,9 @@
 package com.example.ana.staysafesystem.data;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Created by ana on 20/11/17.
@@ -50,5 +52,16 @@ public class Person implements Serializable {
         // field comparison
         return name.contentEquals(person.name)
                 && phoneNumber.contentEquals(person.phoneNumber);
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("name", name);
+            json.put("phone", phoneNumber);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 }
