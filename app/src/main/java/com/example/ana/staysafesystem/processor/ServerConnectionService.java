@@ -1,34 +1,49 @@
 package com.example.ana.staysafesystem.processor;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.data.Msg;
+import com.example.ana.staysafesystem.data.Person;
+import com.example.ana.staysafesystem.data.SensorsInfo;
 import com.example.ana.staysafesystem.gui.FriendAskingHelpActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Created by ana on 24/11/17.
  */
 
-public class LocalService extends Service {
+public class ServerConnectionService extends Service {
+
     private NotificationManager mNM;
     int clientPort = 5561;
+    static int serverPort = 5555;
+    static String serverIp = "192.168.0.108";
 
     // Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
@@ -40,15 +55,14 @@ public class LocalService extends Service {
      * IPC.
      */
     public class LocalBinder extends Binder {
-        LocalService getService() {
-            return LocalService.this;
+        ServerConnectionService getService() {
+            return ServerConnectionService.this;
         }
     }
 
     @Override
     public void onCreate() {
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Display a notification about us starting.  We put an icon in the status bar.
     }
 
     @Override
@@ -85,7 +99,6 @@ public class LocalService extends Service {
                         createNotification(new Msg(json));
                     }
                 } catch (IOException e) {
-                    System.out.println("Deu ruim.");
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -124,5 +137,82 @@ public class LocalService extends Service {
         mBuilder.setAutoCancel(true);
         mNM.notify(999, mBuilder.build());
     }
+
+    public void callFriend() {
+        String number = Processor.getInstance().getCallFriend(this);
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + number));
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            startActivity(intent);
+        }
+    }
+
+    public void buttonPressed(Context context, JSONObject json) {
+        int buttonId = -1;
+        try {
+            buttonId = json.getInt("buttonId");
+            String buttonFunc = Processor.getInstance().getButtonFunc(context, buttonId);
+            doAction(buttonFunc, json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doAction(String func, JSONObject json) {
+        if(func.contentEquals("msg")) {
+            sendMsg(json);
+        } else if(func.contentEquals("call")) {
+            callFriend();
+        } else if(func.contentEquals("track")) {
+            // TODO
+        }
+    }
+
+    private void sendMsg(JSONObject json) {
+        SensorsInfo sensorsInfo = new SensorsInfo(json);
+        MetaMsg metaMsg = Processor.getInstance().getMsgSettings(this);
+        Person user = Processor.getInstance().getProtectedUser(this);
+        ArrayList<Person> friends = Processor.getInstance().getCurrentFriendsList(this);
+        final Msg msg = new Msg(user, sensorsInfo, metaMsg, friends);
+        sendSocket(serverIp, serverPort, msg.toJson().toString());
+    }
+
+    private static void sendSocket(final String ip, final int port, final String content) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket soc = new Socket(ip, port);
+                    PrintWriter writer = new PrintWriter(soc.getOutputStream());
+                    writer.write(content);
+                    writer.flush();
+                    writer.close();
+                } catch (UnknownHostException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+    }
+
+    public static void loginServer(Person p) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("action", ACTION.LOGIN);
+            json.put("name", p.getName());
+            json.put("phone", p.getPhoneNumber());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendSocket(serverIp, serverPort, json.toString());
+    }
+
+    public static Handler handler;
 
 }

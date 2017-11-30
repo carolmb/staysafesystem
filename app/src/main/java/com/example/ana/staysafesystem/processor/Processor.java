@@ -1,38 +1,25 @@
 package com.example.ana.staysafesystem.processor;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
+import android.os.Bundle;
+import android.os.Message;
 
-import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.DataInternalStorage;
 import com.example.ana.staysafesystem.data.MetaMsg;
-import com.example.ana.staysafesystem.data.Msg;
 import com.example.ana.staysafesystem.data.Person;
-import com.example.ana.staysafesystem.data.SensorsInfo;
-import com.example.ana.staysafesystem.gui.FriendAskingHelpActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.ana.staysafesystem.gui.ProtectedUserActivity;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Created by ana on 19/11/17.
  */
 public class Processor {
+
+    public static BluetoothManager btManager = new BluetoothManager();
+    public static boolean isConnected;
 
     DataInternalStorage<ArrayList<Person>> internalStorageFriends;
     DataInternalStorage<MetaMsg> internalStorageMsgSettings;
@@ -58,19 +45,7 @@ public class Processor {
 
     public void initInternalMemory(Context context) {
         internalStorageFriends.saveObj(context, new ArrayList<Person>());
-        loginServer(getProtectedUser(context));
-    }
-
-    private void loginServer(Person p) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("action", ACTION.LOGIN);
-            json.put("name", p.getName());
-            json.put("phone", p.getPhoneNumber());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        sendSocket(serverIp, serverPort, json.toString());
+        ServerConnectionService.loginServer(getProtectedUser(context));
     }
 
     public ArrayList<Person> getCurrentFriendsList(Context context) {
@@ -103,64 +78,8 @@ public class Processor {
         internalStorageMsgSettings.saveObj(context, msgSettings);
     }
 
-    private MetaMsg getMsgSettings(Context context) {
+    public MetaMsg getMsgSettings(Context context) {
         return internalStorageMsgSettings.getObj(context);
-    }
-
-    public void buttonPressed(Context context, JSONObject json) {
-        int buttonId = -1;
-        try {
-            buttonId = json.getInt("buttonId");
-            String buttonFunc = getButtonFunc(context, buttonId);
-            doAction(context, buttonFunc, json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doAction(Context context, String func, JSONObject json) {
-        if(func.contentEquals("msg")) {
-            sendMsg(context, json);
-        } else if(func.contentEquals("call")) {
-            callFriend();
-        } else if(func.contentEquals("track")) {
-            // TODO
-        }
-    }
-
-    private void sendMsg(Context context, JSONObject json) {
-        SensorsInfo sensorsInfo = new SensorsInfo(json);
-        MetaMsg metaMsg = getMsgSettings(context);
-        Person user = getProtectedUser(context);
-        ArrayList<Person> friends = getCurrentFriendsList(context);
-        final Msg msg = new Msg(user, sensorsInfo, metaMsg, friends);
-        sendSocket(serverIp, serverPort, msg.toJson().toString());
-    }
-
-    private void callFriend() {
-        // TODO
-    }
-
-    private void sendSocket(final String ip, final int port, final String content) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket soc = new Socket(ip, port);
-                    PrintWriter writer = new PrintWriter(soc.getOutputStream());
-                    writer.write(content);
-                    writer.flush();
-                    writer.close();
-                } catch (UnknownHostException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        });
-        t.start();
     }
 
     public void clearMode(Context context) {
@@ -214,6 +133,11 @@ public class Processor {
         setPref(context, "callFriend", "isRecorded", audioType);
     }
 
+    public String getCallFriend(Context context) {
+        String number = getPref(context, "callFriend", "friendPhoneNumber");
+        return number;
+    }
+
     public void setEmail(Context context, String email){
         setPref(context, "emailTracking", "email", email);
     }
@@ -231,4 +155,5 @@ public class Processor {
                 context.getSharedPreferences(pref, Context.MODE_PRIVATE);
         return sharedPref.getString(field, null);
     }
+
 }

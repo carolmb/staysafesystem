@@ -1,18 +1,21 @@
 package com.example.ana.staysafesystem.gui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.Processor;
@@ -24,11 +27,13 @@ import java.util.ArrayList;
 
 public class ProtectedUserActivity extends AppCompatActivity {
 
+    static TextView bluetoothText;
+
     class FuncButton {
         TextView description;
         ImageButton img;
     }
-    public  static final int RequestPermissionCode = 1;
+    public static final int RequestPermissionCode = 1;
     ArrayList<FuncButton> funcButtons;
 
     @Override
@@ -36,9 +41,11 @@ public class ProtectedUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_protected_user);
         setTitle("3S - Protegido");
+        bluetoothText = findViewById(R.id.bluetoothMsg);
 
-        enableRuntimePermission();
         setFuncButtons();
+
+        String uddi = getUddi();
 
         String func1 = Processor.getInstance().getButtonFunc(this, 1);
         configButton(func1, 1);
@@ -159,7 +166,7 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Processor.getInstance().buttonPressed(view.getContext(), json);
+                //Processor.getInstance().buttonPressed(view.getContext(), json);
             }
         });
 
@@ -171,25 +178,34 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 try {
                     json.put("heart", 0);
                     json.put("local", "bla");
-                    json.put("buttonId", 1);
+                    json.put("buttonId", 2);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Processor.getInstance().buttonPressed(view.getContext(), json);
+                //Processor.getInstance().buttonPressed(view.getContext(), json);
             }
         });
     }
 
-    public void enableRuntimePermission(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.INTERNET)) {
-            Toast.makeText(this,"Essa permissão é para usarmos a internet.", Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.INTERNET}, RequestPermissionCode);
+    public static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+            byte[] data = bundle.getByteArray("data");
+            String dataString = new String(data);
+            bluetoothText.setText(dataString);
         }
+    };
+
+    private String getUddi() {
+        TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_PHONE_STATE}, RequestPermissionCode);
+        }
+        return tManager.getDeviceId();
     }
+
 
     @Override
     public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
@@ -197,10 +213,9 @@ public class ProtectedUserActivity extends AppCompatActivity {
             case RequestPermissionCode:
                 if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
                     UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
-                            "usar Internet.");
+                            "pegar seu uddi.");
                 }
                 break;
         }
     }
-
 }
