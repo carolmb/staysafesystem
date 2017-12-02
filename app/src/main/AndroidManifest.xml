@@ -21,7 +21,11 @@
         android:theme="@style/Theme.AppCompat.Light">
         <service
             android:name=".processor.ServerConnectionService"
-            android:process=":remote" />
+            android:process=":remoteServer" />
+        <service
+            android:name=".processor.BluetoothService"
+            android:process=":remoteBluetooth" />
+
         android:debuggable="true"
         <activity android:name=".gui.UserModeActivity">
             <intent-filter>

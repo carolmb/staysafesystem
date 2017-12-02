@@ -20,9 +20,6 @@ public class Processor {
     DataInternalStorage<MetaMsg> internalStorageMsgSettings;
     ArrayList<Person> cacheFriendsList;
 
-    String serverIp = "192.168.0.108";
-    int serverPort = 5555;
-
     static private Processor instance;
     private Processor() {
         internalStorageFriends = new DataInternalStorage<>("friendsList");

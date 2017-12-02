@@ -20,7 +20,7 @@ import com.example.ana.staysafesystem.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.aflak.bluetooth.Bluetooth;
+import com.example.ana.staysafesystem.processor.Bluetooth;
 
 import me.aflak.pulltorefresh.PullToRefresh;
 
@@ -33,16 +33,17 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
     private Button not_found;
     private List<BluetoothDevice> paired;
     private PullToRefresh pull_to_refresh;
-    private boolean registered=false;
+    private boolean registered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_pair);
+        setTitle("Selecionar pulseira");
 
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
-        registered=true;
+        registered = true;
 
         bt = new Bluetooth(this);
         bt.enableBluetooth();

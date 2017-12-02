@@ -1,19 +1,8 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.processor.BluetoothService;
 import com.example.ana.staysafesystem.processor.Processor;
 
 import org.json.JSONException;
@@ -29,97 +19,28 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import me.aflak.bluetooth.Bluetooth;
+public class ProtectedUserActivity extends AppCompatActivity {
 
-public class ProtectedUserActivity extends AppCompatActivity implements Bluetooth.CommunicationCallback {
-
-    static TextView bluetoothText;
-    private Bluetooth b;
-    private boolean registered = false;
-
-    @Override
-    public void onConnect(BluetoothDevice device) {
-        Display("Connected to "+device.getName()+" - "+device.getAddress());
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //send.setEnabled(true);
-            }
-        });
-    }
-
-    @Override
-    public void onDisconnect(BluetoothDevice device, String message) {
-        Display("Disconnected!");
-        Display("Connecting again...");
-        b.connectToDevice(device);
-    }
-
-    @Override
-    public void onMessage(String message) {
-        Display(message);
-    }
-
-    @Override
-    public void onError(String message) {
-        Display("Error: "+message);
-    }
-
-    @Override
-    public void onConnectError(final BluetoothDevice device, String message) {
-        Display("Error: "+message);
-        Display("Trying again in 3 sec.");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        b.connectToDevice(device);
-                    }
-                }, 2000);
-            }
-        });
-    }
-
-    public void Display(final String s){
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bluetoothText.setText(s);
-                //scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
-    }
+    static public TextView bluetoothText;
 
     class FuncButton {
         TextView description;
         ImageButton img;
     }
-    public static final int RequestPermissionCode = 1;
     ArrayList<FuncButton> funcButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_protected_user);
         setTitle("3S - Protegido");
         bluetoothText = findViewById(R.id.bluetoothMsg);
 
-        b = new Bluetooth(this);
-        b.enableBluetooth();
+        Intent btIntent = new Intent(this, BluetoothService.class);
+        btIntent.putExtra("pos", getIntent().getIntExtra("pos", -1));
+        startService(btIntent);
 
-        b.setCommunicationCallback(this);
-
-        int pos = getIntent().getExtras().getInt("pos");
-
-        Display("Connecting...");
-        b.connectToDevice(b.getPairedDevices().get(pos));
-
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-        registered = true;
 
         setFuncButtons();
 
@@ -263,56 +184,4 @@ public class ProtectedUserActivity extends AppCompatActivity implements Bluetoot
         });
     }
 
-    public static Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-            byte[] data = bundle.getByteArray("data");
-            String dataString = new String(data);
-            bluetoothText.setText(dataString);
-        }
-    };
-
-    @Override
-    public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
-        switch (RC) {
-            case RequestPermissionCode:
-                if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
-                    UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
-                            "pegar seu uddi.");
-                }
-                break;
-        }
-    }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-                Intent intent1 = new Intent(ProtectedUserActivity.this, SelectPairActivity.class);
-
-                switch (state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        if(registered) {
-                            unregisterReceiver(mReceiver);
-                            registered=false;
-                        }
-                        startActivity(intent1);
-                        finish();
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        if(registered) {
-                            unregisterReceiver(mReceiver);
-                            registered=false;
-                        }
-                        startActivity(intent1);
-                        finish();
-                        break;
-                }
-            }
-        }
-    };
 }

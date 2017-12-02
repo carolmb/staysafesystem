@@ -40,28 +40,30 @@ import java.util.Scanner;
 
 public class ServerConnectionService extends Service {
 
+    private Binder binder;
+
     private NotificationManager mNM;
     int clientPort = 5561;
     static int serverPort = 5555;
     static String serverIp = "192.168.0.108";
 
-    // Unique Identification Number for the Notification.
-    // We use it on Notification start, and to cancel it.
     private int NOTIFICATION = 1;
 
-    /**
-     * Class for clients to access.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with
-     * IPC.
-     */
-    public class LocalBinder extends Binder {
-        ServerConnectionService getService() {
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    public class Binder extends android.os.Binder {
+        public ServerConnectionService getService() {
             return ServerConnectionService.this;
         }
     }
 
+
     @Override
     public void onCreate() {
+        binder = new Binder();
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
@@ -73,15 +75,6 @@ public class ServerConnectionService extends Service {
 
     @Override
     public void onDestroy() {}
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    // This is the object that receives interactions from clients.  See
-    // RemoteService for a more complete example.
-    private final IBinder mBinder = new LocalBinder();
 
     public void waitServerMsg() {
         Thread t = new Thread(new Runnable() {
@@ -149,11 +142,11 @@ public class ServerConnectionService extends Service {
         }
     }
 
-    public void buttonPressed(Context context, JSONObject json) {
+    public void buttonPressed(JSONObject json) {
         int buttonId = -1;
         try {
             buttonId = json.getInt("buttonId");
-            String buttonFunc = Processor.getInstance().getButtonFunc(context, buttonId);
+            String buttonFunc = Processor.getInstance().getButtonFunc(this, buttonId);
             doAction(buttonFunc, json);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -212,7 +205,4 @@ public class ServerConnectionService extends Service {
         }
         sendSocket(serverIp, serverPort, json.toString());
     }
-
-    public static Handler handler;
-
 }

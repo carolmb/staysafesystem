@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,7 +17,7 @@ import com.example.ana.staysafesystem.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.aflak.bluetooth.Bluetooth;
+import com.example.ana.staysafesystem.processor.Bluetooth;
 
 public class BluetoothActivity extends AppCompatActivity implements Bluetooth.DiscoveryCallback, AdapterView.OnItemClickListener {
 
@@ -49,7 +48,7 @@ public class BluetoothActivity extends AppCompatActivity implements Bluetooth.Di
 
         bluetooth.scanDevices();
         progress.setVisibility(View.VISIBLE);
-        state.setText("Scanning...");
+        state.setText("Procurando...");
         listView.setEnabled(false);
 
         scan.setEnabled(false);
@@ -68,7 +67,7 @@ public class BluetoothActivity extends AppCompatActivity implements Bluetooth.Di
 
                 devices = new ArrayList<>();
                 progress.setVisibility(View.VISIBLE);
-                state.setText("Scanning...");
+                state.setText("Procurando...");
                 bluetooth.scanDevices();
             }
         });
@@ -121,7 +120,7 @@ public class BluetoothActivity extends AppCompatActivity implements Bluetooth.Di
     @Override
     public void onPair(BluetoothDevice device) {
         setProgressVisibility(View.INVISIBLE);
-        setText("Paired!");
+        setText("Pareado!");
         Intent i = new Intent(BluetoothActivity.this, SelectPairActivity.class);
         startActivity(i);
         finish();
@@ -130,19 +129,19 @@ public class BluetoothActivity extends AppCompatActivity implements Bluetooth.Di
     @Override
     public void onUnpair(BluetoothDevice device) {
         setProgressVisibility(View.INVISIBLE);
-        setText("Paired!");
+        setText("Pareado!");
     }
 
     @Override
     public void onError(String message) {
         setProgressVisibility(View.INVISIBLE);
-        setText("Error: " + message);
+        setText("Erro: " + message);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         setProgressVisibility(View.VISIBLE);
-        setText("Pairing...");
+        setText("Pareando...");
         bluetooth.pair(devices.get(position));
     }
 
