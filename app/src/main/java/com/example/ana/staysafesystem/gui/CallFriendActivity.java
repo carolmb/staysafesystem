@@ -56,7 +56,7 @@ public class CallFriendActivity extends AppCompatActivity {
                     "a ligação por você.", Toast.LENGTH_LONG).show();
         } else {
             ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_CONTACTS}, RequestPermissionCode);
+                    Manifest.permission.CALL_PHONE}, RequestPermissionCode);
         }
     }
 

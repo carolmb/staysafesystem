@@ -29,15 +29,18 @@ public class SensorsInfo {
     /*
     * { "heart":0, "local":"", "fall":false }
     * */
-    public SensorsInfo(JSONObject json, Context context) {
+    public SensorsInfo(JSONObject json) {
         try {
             heart = json.getInt("heart");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        this.local = "Latitude: " + BluetoothService.location.getLatitude() + " " +
-                "Longetude: " + BluetoothService.location.getLongitude();
-        this.context = context;
+        if(BluetoothService.location != null) {
+            this.local = "Latitude: " + BluetoothService.location.getLatitude() + " " +
+                    "Longetude: " + BluetoothService.location.getLongitude();
+        } else {
+            Log.e("LOCAL", "problema com localização");
+        }
     }
 
     public String toString(MetaMsg metaMsg) {

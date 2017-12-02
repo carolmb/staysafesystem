@@ -195,7 +195,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
 
     public void buttonPressed(JSONObject json) {
         Log.e("BUTTON", "BUTTON PRESSED");
-        int buttonId = -1;
+        int buttonId;
         try {
             buttonId = json.getInt("buttonId");
             String buttonFunc = Processor.getInstance().getButtonFunc(this, buttonId);
@@ -206,9 +206,10 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     }
 
     private void doAction(String func, JSONObject json) {
+        if(func == null) {
+            return; // there is no func to pressed button
+        }
         if(func.contentEquals("msg")) {
-            Log.e("BUTTON", "MSG");
-
             sendMsg(json);
         } else if(func.contentEquals("call")) {
             callFriend();
@@ -218,8 +219,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     }
 
     private void sendMsg(JSONObject json) {
-        Log.e("BUTTON", "sendMsg");
-        SensorsInfo sensorsInfo = new SensorsInfo(json, this);
+        SensorsInfo sensorsInfo = new SensorsInfo(json);
         MetaMsg metaMsg = Processor.getInstance().getMsgSettings(this);
         Person user = Processor.getInstance().getProtectedUser(this);
         ArrayList<Person> friends = Processor.getInstance().getCurrentFriendsList(this);
@@ -234,8 +234,9 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
-            startActivity(intent);
+            return;
         }
+        startActivity(intent);
     }
 
 
