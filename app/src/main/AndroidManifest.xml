@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".gui.LoginActivity" />
-        <activity android:name=".gui.ProtectedUserActivity"/>
+        <activity android:name=".gui.ProtectedUserActivity" />
         <activity android:name=".gui.GuardianUserActivity" />
         <activity android:name=".gui.AddFuncActivity" />
         <activity android:name=".gui.MsgFuncActivity" />
@@ -42,7 +42,8 @@
         <activity android:name=".gui.HistoryActivity" />
         <activity android:name=".gui.CancelAccountActivity" />
         <activity android:name=".gui.ProfileActivity" />
-        <activity android:name=".gui.BluetoothActivity"></activity>
+        <activity android:name=".gui.BluetoothActivity" />
+        <activity android:name=".gui.SelectPairActivity"></activity>
     </application>
 
 </manifest>

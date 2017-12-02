@@ -1,8 +1,12 @@
 package com.example.ana.staysafesystem.gui;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
@@ -25,9 +29,69 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ProtectedUserActivity extends AppCompatActivity {
+import me.aflak.bluetooth.Bluetooth;
+
+public class ProtectedUserActivity extends AppCompatActivity implements Bluetooth.CommunicationCallback {
 
     static TextView bluetoothText;
+    private Bluetooth b;
+    private boolean registered = false;
+
+    @Override
+    public void onConnect(BluetoothDevice device) {
+        Display("Connected to "+device.getName()+" - "+device.getAddress());
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //send.setEnabled(true);
+            }
+        });
+    }
+
+    @Override
+    public void onDisconnect(BluetoothDevice device, String message) {
+        Display("Disconnected!");
+        Display("Connecting again...");
+        b.connectToDevice(device);
+    }
+
+    @Override
+    public void onMessage(String message) {
+        Display(message);
+    }
+
+    @Override
+    public void onError(String message) {
+        Display("Error: "+message);
+    }
+
+    @Override
+    public void onConnectError(final BluetoothDevice device, String message) {
+        Display("Error: "+message);
+        Display("Trying again in 3 sec.");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        b.connectToDevice(device);
+                    }
+                }, 2000);
+            }
+        });
+    }
+
+    public void Display(final String s){
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bluetoothText.setText(s);
+                //scrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+    }
 
     class FuncButton {
         TextView description;
@@ -43,9 +107,21 @@ public class ProtectedUserActivity extends AppCompatActivity {
         setTitle("3S - Protegido");
         bluetoothText = findViewById(R.id.bluetoothMsg);
 
-        setFuncButtons();
+        b = new Bluetooth(this);
+        b.enableBluetooth();
 
-        String uddi = getUddi();
+        b.setCommunicationCallback(this);
+
+        int pos = getIntent().getExtras().getInt("pos");
+
+        Display("Connecting...");
+        b.connectToDevice(b.getPairedDevices().get(pos));
+
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
+        registered = true;
+
+        setFuncButtons();
 
         String func1 = Processor.getInstance().getButtonFunc(this, 1);
         configButton(func1, 1);
@@ -197,16 +273,6 @@ public class ProtectedUserActivity extends AppCompatActivity {
         }
     };
 
-    private String getUddi() {
-        TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.READ_PHONE_STATE}, RequestPermissionCode);
-        }
-        return tManager.getDeviceId();
-    }
-
-
     @Override
     public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
         switch (RC) {
@@ -218,4 +284,35 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                Intent intent1 = new Intent(ProtectedUserActivity.this, SelectPairActivity.class);
+
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        if(registered) {
+                            unregisterReceiver(mReceiver);
+                            registered=false;
+                        }
+                        startActivity(intent1);
+                        finish();
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        if(registered) {
+                            unregisterReceiver(mReceiver);
+                            registered=false;
+                        }
+                        startActivity(intent1);
+                        finish();
+                        break;
+                }
+            }
+        }
+    };
 }

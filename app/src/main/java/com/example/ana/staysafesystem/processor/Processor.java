@@ -1,15 +1,11 @@
 package com.example.ana.staysafesystem.processor;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Message;
 
 import com.example.ana.staysafesystem.data.DataInternalStorage;
 import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.data.Person;
-import com.example.ana.staysafesystem.gui.ProtectedUserActivity;
 
 import java.util.ArrayList;
 
@@ -18,7 +14,6 @@ import java.util.ArrayList;
  */
 public class Processor {
 
-    public static BluetoothManager btManager = new BluetoothManager();
     public static boolean isConnected;
 
     DataInternalStorage<ArrayList<Person>> internalStorageFriends;

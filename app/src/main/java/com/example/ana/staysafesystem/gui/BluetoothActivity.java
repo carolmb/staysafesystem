@@ -1,121 +1,149 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ana.staysafesystem.R;
-import com.example.ana.staysafesystem.processor.BluetoothManager;
-import com.example.ana.staysafesystem.processor.Processor;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BluetoothActivity extends AppCompatActivity {
+import me.aflak.bluetooth.Bluetooth;
 
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothManager btManager = Processor.btManager;
-    final int BLUETOOTH_ENABLED_REQUEST_CODE = 1;
-    ArrayAdapter devicesAdapter;
-    String deviceInfo = "";
+public class BluetoothActivity extends AppCompatActivity implements Bluetooth.DiscoveryCallback, AdapterView.OnItemClickListener {
+
+    private Bluetooth bluetooth;
+    private ListView listView;
+    private ArrayAdapter<String> adapter;
+    private TextView state;
+    private ProgressBar progress;
+    private Button scan;
+    private List<BluetoothDevice> devices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Conexão Bluetooth");
         setContentView(R.layout.activity_bluetooth);
-        devicesAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        startBluetooth();
-    }
+        listView = findViewById(R.id.scan_list);
+        state = findViewById(R.id.scan_state);
+        progress = findViewById(R.id.scan_progress);
+        scan = findViewById(R.id.scan_scan_again);
 
-    private void startBluetooth() {
-        mBluetoothAdapter = btManager.getmBluetoothAdapter();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
-        if (!mBluetoothAdapter.isEnabled()){
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, BLUETOOTH_ENABLED_REQUEST_CODE);
-        }
+        bluetooth = new Bluetooth(this);
+        bluetooth.setDiscoveryCallback(this);
 
-        if (mBluetoothAdapter == null) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Não é compatível.")
-                    .setMessage("Seu celular não suporta Bluetooth.")
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            System.exit(0);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
+        bluetooth.scanDevices();
+        progress.setVisibility(View.VISIBLE);
+        state.setText("Scanning...");
+        listView.setEnabled(false);
 
-        findDevice();
-    }
+        scan.setEnabled(false);
+        devices = new ArrayList<>();
 
-    private void findDevice() {
-        listPairedDevices();
-    }
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.clear();
+                        scan.setEnabled(false);
+                    }
+                });
 
-    private void listPairedDevices() {
-        final ListView deviceList = (ListView) findViewById(R.id.devicesList);
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
-        Set<BluetoothDevice> pairedDevices  = btManager.getBondedDevices();
-
-        if (pairedDevices.size() > 0){
-            for(BluetoothDevice device : pairedDevices){
-                devicesAdapter.add(device.getName() + "\n" + device.getAddress());
+                devices = new ArrayList<>();
+                progress.setVisibility(View.VISIBLE);
+                state.setText("Scanning...");
+                bluetooth.scanDevices();
             }
-            deviceList.setAdapter(devicesAdapter);
-            deviceList.setOnItemClickListener(myListClickListener);
-        }
-        else{
-            alertDialog.setMessage("No devices found paired");
-            alertDialog.show();
-        }
+        });
     }
 
-    private AdapterView.OnItemClickListener myListClickListener = new AdapterView.OnItemClickListener(){
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            deviceInfo = ((TextView) view).getText().toString();
-            String deviceAddress = deviceInfo.substring(deviceInfo.length() - 17);
-            int result = btManager.connectToDevice(deviceAddress);
-            if(result == 1){
-                Toast.makeText(BluetoothActivity.this, "Conectado a " + deviceInfo, Toast.LENGTH_SHORT).show();
-                Processor.isConnected = true;
-                UtilGUI.changeScreen(view.getContext(), ProtectedUserActivity.class);
+    private void setText(final String txt) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                state.setText(txt);
             }
-            else{
-                Toast.makeText(BluetoothActivity.this, "Falha ao se conectar.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
+        });
+    }
 
+    private void setProgressVisibility(final int id) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progress.setVisibility(id);
+            }
+        });
+    }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BLUETOOTH_ENABLED_REQUEST_CODE){
-            if(resultCode == RESULT_OK){
+    public void onFinish() {
+        setProgressVisibility(View.INVISIBLE);
+        setText("Scan finished!");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                scan.setEnabled(true);
+                listView.setEnabled(true);
+            }
+        });
+    }
 
+    @Override
+    public void onDevice(final BluetoothDevice device) {
+        final BluetoothDevice tmp = device;
+        devices.add(device);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.add(tmp.getAddress() + " - " + tmp.getName());
             }
-            else if(resultCode == RESULT_CANCELED){
-                Toast.makeText(this, "Habilite uso do Bluetooth.", Toast.LENGTH_SHORT).show();
-                System.exit(0);
-            }
-        }
+        });
+    }
+
+    @Override
+    public void onPair(BluetoothDevice device) {
+        setProgressVisibility(View.INVISIBLE);
+        setText("Paired!");
+        Intent i = new Intent(BluetoothActivity.this, SelectPairActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onUnpair(BluetoothDevice device) {
+        setProgressVisibility(View.INVISIBLE);
+        setText("Paired!");
+    }
+
+    @Override
+    public void onError(String message) {
+        setProgressVisibility(View.INVISIBLE);
+        setText("Error: " + message);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        setProgressVisibility(View.VISIBLE);
+        setText("Pairing...");
+        bluetooth.pair(devices.get(position));
     }
 
 }

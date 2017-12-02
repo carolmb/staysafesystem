@@ -57,7 +57,7 @@ public class UserModeActivity extends AppCompatActivity {
             if(Processor.isConnected) {
                 UtilGUI.changeScreen(this, ProtectedUserActivity.class);
             } else {
-                UtilGUI.changeScreen(this, BluetoothActivity.class);
+                UtilGUI.changeScreen(this, SelectPairActivity.class);
             }
         }
     }
