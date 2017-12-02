@@ -1,17 +1,11 @@
 package com.example.ana.staysafesystem.gui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,12 +18,7 @@ import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.BluetoothService;
 import com.example.ana.staysafesystem.processor.Processor;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-
-import static android.location.Criteria.ACCURACY_HIGH;
 
 public class ProtectedUserActivity extends AppCompatActivity {
 
@@ -66,7 +55,6 @@ public class ProtectedUserActivity extends AppCompatActivity {
         String func2 = Processor.getInstance().getButtonFunc(this, 2);
         configButton(func2, 2);
 
-        saveMeButtons();
     }
 
     private void setFuncButtons() {
@@ -164,40 +152,6 @@ public class ProtectedUserActivity extends AppCompatActivity {
 
         }
         return true;
-    }
-
-    void saveMeButtons() {
-        ImageButton helpMe1 = findViewById(R.id.helpMe);
-        helpMe1.setOnClickListener( new View.OnClickListener() {
-            public void onClick(View view) {
-                UtilGUI.dialog(view.getContext(), "Deu certo 1.");
-                JSONObject json = new JSONObject();
-                try {
-                    json.put("heart", 0);
-                    json.put("local", "bla");
-                    json.put("buttonId", 1);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                //Processor.getInstance().buttonPressed(view.getContext(), json);
-            }
-        });
-
-        ImageButton helpMe2 = findViewById(R.id.helpMe11);
-        helpMe2.setOnClickListener( new View.OnClickListener() {
-            public void onClick(View view) {
-                UtilGUI.dialog(view.getContext(), "Deu certo 2.");
-                JSONObject json = new JSONObject();
-                try {
-                    json.put("heart", 0);
-                    json.put("local", "bla");
-                    json.put("buttonId", 2);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                //Processor.getInstance().buttonPressed(view.getContext(), json);
-            }
-        });
     }
 
     public void enableRuntimePermission(){

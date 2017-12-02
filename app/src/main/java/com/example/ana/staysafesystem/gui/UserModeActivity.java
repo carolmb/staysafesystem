@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.processor.BluetoothService;
 import com.example.ana.staysafesystem.processor.ServerConnectionService;
 import com.example.ana.staysafesystem.processor.Processor;
 
@@ -54,7 +55,7 @@ public class UserModeActivity extends AppCompatActivity {
         if(mode.contentEquals("guardian")) {
             UtilGUI.changeScreen(this, GuardianUserActivity.class);
         } else {
-            if(Processor.isConnected) {
+            if(BluetoothService.registered) {
                 UtilGUI.changeScreen(this, ProtectedUserActivity.class);
             } else {
                 UtilGUI.changeScreen(this, SelectPairActivity.class);

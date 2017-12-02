@@ -52,7 +52,7 @@ import java.util.ArrayList;
 public class BluetoothService extends Service implements Bluetooth.CommunicationCallback {
 
     static public Bluetooth b;
-    static boolean registered = false;
+    static public boolean registered = false;
 
     static int serverPort = 5555;
     static String serverIp = "192.168.0.108";

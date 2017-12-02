@@ -39,6 +39,7 @@ public class SensorsInfo {
             this.local = "Latitude: " + BluetoothService.location.getLatitude() + " " +
                     "Longetude: " + BluetoothService.location.getLongitude();
         } else {
+            this.local = "Local indisponível";
             Log.e("LOCAL", "problema com localização");
         }
     }
