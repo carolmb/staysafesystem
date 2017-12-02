@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Binder;
@@ -54,12 +56,11 @@ public class ServerConnectionService extends Service {
         return binder;
     }
 
-    public class Binder extends android.os.Binder {
+    public class LocalBinder extends android.os.Binder {
         public ServerConnectionService getService() {
             return ServerConnectionService.this;
         }
     }
-
 
     @Override
     public void onCreate() {
@@ -131,45 +132,16 @@ public class ServerConnectionService extends Service {
         mNM.notify(999, mBuilder.build());
     }
 
-    public void callFriend() {
-        String number = Processor.getInstance().getCallFriend(this);
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + number));
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CALL_PHONE)
-                != PackageManager.PERMISSION_GRANTED) {
-            startActivity(intent);
-        }
-    }
-
-    public void buttonPressed(JSONObject json) {
-        int buttonId = -1;
+    public static void loginServer(Person p) {
+        JSONObject json = new JSONObject();
         try {
-            buttonId = json.getInt("buttonId");
-            String buttonFunc = Processor.getInstance().getButtonFunc(this, buttonId);
-            doAction(buttonFunc, json);
+            json.put("action", ACTION.LOGIN);
+            json.put("name", p.getName());
+            json.put("phone", p.getPhoneNumber());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private void doAction(String func, JSONObject json) {
-        if(func.contentEquals("msg")) {
-            sendMsg(json);
-        } else if(func.contentEquals("call")) {
-            callFriend();
-        } else if(func.contentEquals("track")) {
-            // TODO
-        }
-    }
-
-    private void sendMsg(JSONObject json) {
-        SensorsInfo sensorsInfo = new SensorsInfo(json);
-        MetaMsg metaMsg = Processor.getInstance().getMsgSettings(this);
-        Person user = Processor.getInstance().getProtectedUser(this);
-        ArrayList<Person> friends = Processor.getInstance().getCurrentFriendsList(this);
-        final Msg msg = new Msg(user, sensorsInfo, metaMsg, friends);
-        sendSocket(serverIp, serverPort, msg.toJson().toString());
+        sendSocket(serverIp, serverPort, json.toString());
     }
 
     private static void sendSocket(final String ip, final int port, final String content) {
@@ -194,15 +166,4 @@ public class ServerConnectionService extends Service {
         t.start();
     }
 
-    public static void loginServer(Person p) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("action", ACTION.LOGIN);
-            json.put("name", p.getName());
-            json.put("phone", p.getPhoneNumber());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        sendSocket(serverIp, serverPort, json.toString());
-    }
 }

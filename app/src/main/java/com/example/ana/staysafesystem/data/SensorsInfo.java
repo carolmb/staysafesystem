@@ -1,5 +1,18 @@
 package com.example.ana.staysafesystem.data;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+
+import com.example.ana.staysafesystem.gui.ProtectedUserActivity;
+import com.example.ana.staysafesystem.processor.BluetoothService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,32 +22,32 @@ import org.json.JSONObject;
 
 public class SensorsInfo {
     int heart;
-    String location;
+    String local;
 
-    public SensorsInfo(int heart, String location) {
-        this.heart = heart;
-        this.location = location;
-    }
+    Context context;
 
     /*
     * { "heart":0, "local":"", "fall":false }
     * */
-    public SensorsInfo(JSONObject json) {
+    public SensorsInfo(JSONObject json, Context context) {
         try {
             heart = json.getInt("heart");
-            location = json.getString("local");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        this.local = "Latitude: " + BluetoothService.location.getLatitude() + " " +
+                "Longetude: " + BluetoothService.location.getLongitude();
+        this.context = context;
     }
 
     public String toString(MetaMsg metaMsg) {
         String msg = "";
-        if(metaMsg.heartbeat) {
+        if (metaMsg.heartbeat) {
             msg = "Batimento Cardíaco: " + heart + "\n";
         }
-        if(metaMsg.local) {
-            msg += "Localização: " + location + "\n";
+        if (metaMsg.local) {
+            msg += "Localização: " + local + "\n";
+            Log.e("LOCAL", local);
         }
         return msg;
     }

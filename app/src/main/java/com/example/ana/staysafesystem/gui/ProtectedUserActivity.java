@@ -1,14 +1,24 @@
 package com.example.ana.staysafesystem.gui;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.processor.BluetoothService;
@@ -18,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static android.location.Criteria.ACCURACY_HIGH;
 
 public class ProtectedUserActivity extends AppCompatActivity {
 
@@ -38,9 +50,13 @@ public class ProtectedUserActivity extends AppCompatActivity {
         bluetoothText = findViewById(R.id.bluetoothMsg);
 
         Intent btIntent = new Intent(this, BluetoothService.class);
-        btIntent.putExtra("pos", getIntent().getIntExtra("pos", -1));
-        startService(btIntent);
+        int pos = getIntent().getIntExtra("pos", -1);
+        btIntent.putExtra("pos", pos);
+        if(pos >= 0) {
+            startService(btIntent);
+        }
 
+        enableRuntimePermission();
 
         setFuncButtons();
 
@@ -182,6 +198,29 @@ public class ProtectedUserActivity extends AppCompatActivity {
                 //Processor.getInstance().buttonPressed(view.getContext(), json);
             }
         });
+    }
+
+    public void enableRuntimePermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            Toast.makeText(this,"Essa permissão nos garante acesso a sua localização.", Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 23);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int RC, String per[], int[] PResult) {
+        switch (RC) {
+            case 23:
+                if (!(PResult.length > 0 && PResult[0] == PackageManager.PERMISSION_GRANTED)) {
+                    UtilGUI.dialog(this, "Esse aplicativo não tem permissão para " +
+                            "acessar sua localização. Isso pode causar problemass no futuro.");
+                }
+                break;
+        }
     }
 
 }
