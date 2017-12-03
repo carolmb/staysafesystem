@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.Person;
 import com.example.ana.staysafesystem.processor.Processor;
+import com.example.ana.staysafesystem.processor.ServerConnectionService;
 
 import java.util.ArrayList;
 

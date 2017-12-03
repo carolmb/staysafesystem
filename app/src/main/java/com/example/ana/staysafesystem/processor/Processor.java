@@ -3,6 +3,7 @@ package com.example.ana.staysafesystem.processor;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.ana.staysafesystem.data.Call;
 import com.example.ana.staysafesystem.data.DataInternalStorage;
 import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.data.Person;
@@ -14,11 +15,11 @@ import java.util.ArrayList;
  */
 public class Processor {
 
-    public static boolean isConnected;
-
     DataInternalStorage<ArrayList<Person>> internalStorageFriends;
     DataInternalStorage<MetaMsg> internalStorageMsgSettings;
-    ArrayList<Person> cacheFriendsList;
+    ArrayList<Person> friendsListCache;
+    ArrayList<Call> callsCache;
+    ArrayList<Person> protectedFriends;
 
     static private Processor instance;
     private Processor() {
@@ -37,33 +38,49 @@ public class Processor {
 
     public void initInternalMemory(Context context) {
         internalStorageFriends.saveObj(context, new ArrayList<Person>());
-        ServerConnectionService.loginServer(getProtectedUser(context));
+        Person user = getProtectedUser(context);
+        ServerConnectionService.loginServer(user);
+        ServerConnectionService.getCalls(user);
+        ServerConnectionService.getProtectedFriends(user);
+    }
+
+    public void updateCallsCache(ArrayList<Call> calls) {
+        callsCache = calls;
+    }
+
+    public ArrayList<Person> getProtectedFriends() {
+        return protectedFriends;
+    }
+
+    public void setProtectedFriends(ArrayList<Person> protectedFriends) {
+        this.protectedFriends = protectedFriends;
     }
 
     public ArrayList<Person> getCurrentFriendsList(Context context) {
-        if(cacheFriendsList == null) {
-            cacheFriendsList = internalStorageFriends.getObj(context);
+        if(friendsListCache == null) {
+            friendsListCache = internalStorageFriends.getObj(context);
         }
-        return cacheFriendsList;
+        return friendsListCache;
     }
 
     public void updateFriendInList(Context context, Person person) {
-        if(cacheFriendsList == null) {
-            cacheFriendsList = internalStorageFriends.getObj(context);
+        if(friendsListCache == null) {
+            friendsListCache = internalStorageFriends.getObj(context);
         }
-        if(!cacheFriendsList.contains(person)) {
-            cacheFriendsList.add(person);
+        if(!friendsListCache.contains(person)) {
+            friendsListCache.add(person);
         } else {
-            cacheFriendsList.remove(person);
+            friendsListCache.remove(person);
         }
     }
 
     public boolean isInCacheFriendsList(Person person) {
-        return cacheFriendsList.contains(person);
+        return friendsListCache.contains(person);
     }
 
     public void saveCacheFriendsList(Context context) {
-        internalStorageFriends.saveObj(context, cacheFriendsList);
+        internalStorageFriends.saveObj(context, friendsListCache);
+        ServerConnectionService.sendGuardians(friendsListCache);
     }
 
     public void setMsgSettings(Context context, MetaMsg msgSettings) {

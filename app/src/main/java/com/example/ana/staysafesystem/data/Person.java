@@ -17,6 +17,16 @@ public class Person implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
+    public Person(JSONObject json) {
+        try {
+            this.name = json.getString("name");
+            this.phoneNumber = json.getString("phone");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public String getName() {
         return name;
     }

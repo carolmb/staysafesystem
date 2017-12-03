@@ -5,17 +5,34 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.ana.staysafesystem.R;
+import com.example.ana.staysafesystem.data.Person;
 import com.example.ana.staysafesystem.processor.Processor;
 
+import java.util.ArrayList;
+
 public class GuardianUserActivity extends AppCompatActivity {
+
+    ListView listView;
+    ArrayList<Person> currentFriends;
+    ArrayAdapter<Person> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guardian);
         setTitle("3S - Guardião");
+
+        currentFriends = Processor.getInstance().getProtectedFriends();
+
+        listView = findViewById(R.id.friends);
+        arrayAdapter = new ArrayAdapter<Person>(
+                this,
+                R.layout.contact_list_item,
+                currentFriends);
     }
 
     @Override
