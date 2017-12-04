@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -22,6 +23,15 @@ public class UserModeActivity extends AppCompatActivity {
 
         Intent server = new Intent(this, ServerConnectionService.class);
         startService(server);
+
+        Processor.getInstance().initInternalMemory(this);
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Log.e("Não pode", "Não pode");
+            e.printStackTrace();
+        }
 
         Button guardianUser = findViewById(R.id.guardian);
         guardianUser.setOnClickListener(new View.OnClickListener() {

@@ -7,13 +7,10 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,6 +25,10 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.MetaMsg;
 import com.example.ana.staysafesystem.data.Msg;
@@ -129,7 +130,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("EITAAA", message + " QUE ALEGRIA");
+        Log.e("MSG", "Nova mensagem:" + message);
     }
 
     @Override
@@ -194,7 +195,6 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     }
 
     public void buttonPressed(JSONObject json) {
-        Log.e("BUTTON", "BUTTON PRESSED");
         int buttonId;
         try {
             buttonId = json.getInt("buttonId");
@@ -224,7 +224,32 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         Person user = Processor.getInstance().getProtectedUser(this);
         ArrayList<Person> friends = Processor.getInstance().getCurrentFriendsList(this);
         final Msg msg = new Msg(user, sensorsInfo, metaMsg, friends);
-        sendSocket(serverIp, serverPort, msg.toJson().toString());
+
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    Log.e("MSG", response);
+                    JSONObject jsonResponse = new JSONObject(response);
+                    boolean success = jsonResponse.getBoolean("success");
+                    Log.e("MSG", success + "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.e("VOLLEY", volleyError.getMessage());
+                volleyError.printStackTrace();
+            }
+        };
+
+        MessengerRequest messengerRequest =
+                new MessengerRequest(msg, responseListener, errorListener);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(messengerRequest);
     }
 
     public void callFriend() {

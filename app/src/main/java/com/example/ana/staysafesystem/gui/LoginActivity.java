@@ -3,6 +3,7 @@ package com.example.ana.staysafesystem.gui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -30,12 +31,11 @@ public class LoginActivity extends AppCompatActivity {
                 String name = nameEditText.getText().toString();
                 String phone = phoneEditText.getText().toString();
 
+                Log.e("LOGIN", "name " + name + " phone: " + phone);
+
                 Person user = new Person(name, phone);
                 if (user.isValid()) {
                     Processor.getInstance().setProtectedUser(context, user);
-                    Processor.getInstance().initInternalMemory(view.getContext());
-
-                    UtilGUI.changeScreen(context, UserModeActivity.class);
                 } else {
                     UtilGUI.dialog(context,
                             "É necessário informar seu número celular e seu nome.");

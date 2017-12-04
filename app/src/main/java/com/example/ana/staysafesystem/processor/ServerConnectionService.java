@@ -18,6 +18,10 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.example.ana.staysafesystem.R;
 import com.example.ana.staysafesystem.data.Call;
 import com.example.ana.staysafesystem.data.MetaMsg;
@@ -70,95 +74,62 @@ public class ServerConnectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        waitServerMsg();
+        update();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {}
 
-    public void waitServerMsg() {
+    public void update() {
+        final Person user = Processor.getInstance().getProtectedUser(this);
+        final Context context = this;
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    ServerSocket server = new ServerSocket(clientPort);
+                while(true) {
+                    try {
+                        Thread.sleep(5000);
+                        Response.Listener<String> responseListener = new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    Log.e("MSG DO SERVER", response);
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    boolean success = jsonResponse.getBoolean("success");
+                                    if(success) { // if there is update
+                                        String title = jsonResponse.getString("title");
+                                        String subtitle = jsonResponse.getString("subtitle");
+                                        String content = jsonResponse.getString("content");
+                                        String from = jsonResponse.getString("from_phone");
+                                        Msg msg = new Msg(new Person("Amigo", from), title, subtitle, content);
+                                        createNotification(msg);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        Response.ErrorListener errorListener = new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Log.e("VOLLEY", volleyError.getMessage());
+                                volleyError.printStackTrace();
+                            }
+                        };
 
-                    while(true){
-                        Socket socket = server.accept();
-                        Scanner scanner = new Scanner(socket.getInputStream());
-                        String msg = scanner.nextLine();
-                        Log.d("SOCKET MSG", msg);
-                        JSONObject json = new JSONObject(msg);
-                        doAction(json);
+                        UpdateRequest updateRequest =
+                                new UpdateRequest(user, responseListener, errorListener);
+                        RequestQueue queue = Volley.newRequestQueue(context);
+                        queue.add(updateRequest);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+
             }
         });
         t.start();
-    }
-
-    private void doAction(JSONObject json) {
-        int code = 0;
-        try {
-            code = json.getInt("action");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        switch (code) {
-            case ACTION.MSG:
-                createNotification(new Msg(json));
-                break;
-            case ACTION.HIST:
-                updateCalls(json);
-                break;
-            case ACTION.UPDATE:
-                getCalls(Processor.getInstance().getProtectedUser(this));
-                break;
-            case ACTION.PROTECTED:
-                setProtectedFriends(json);
-                // TODO
-
-        }
-    }
-    private void setProtectedFriends(JSONObject json) {
-        ArrayList<Person> protectedFriends = new ArrayList<Person>();
-        try {
-            JSONArray array = json.getJSONArray("prot");
-            for(int i = 0; i < array.length(); i++) {
-                Person p = new Person(array.getJSONObject(i));
-                protectedFriends.add(p);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Processor.getInstance().setProtectedFriends(protectedFriends);
-    }
-
-    private void updateCalls(JSONObject json) {
-        JSONArray array = null;
-        try {
-            array = json.getJSONArray("hist");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        if(array == null) {
-            return;
-        }
-        ArrayList<Call> calls = new ArrayList<>();
-        for(int i = 0; i < array.length(); i++) {
-            try {
-                JSONObject current = array.getJSONObject(i);
-                calls.add(new Call(current));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        Processor.getInstance().updateCallsCache(calls);
     }
 
     private void createNotification(Msg msg) {
@@ -191,48 +162,11 @@ public class ServerConnectionService extends Service {
         mNM.notify(999, mBuilder.build());
     }
 
-    public static void getProtectedFriends(Person p) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("action", ACTION.PROTECTED);
-            json.put("name", p.getName());
-            json.put("phone", p.getPhoneNumber());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        sendSocket(serverIp, serverPort, json.toString());
-    }
 
     public static void getCalls(Person p) {
         JSONObject json = new JSONObject();
         try {
             json.put("action", ACTION.HIST);
-            json.put("name", p.getName());
-            json.put("phone", p.getPhoneNumber());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        sendSocket(serverIp, serverPort, json.toString());
-    }
-
-    public static void sendGuardians(ArrayList<Person> guardians) {
-        JSONObject jsonMsg = new JSONObject();
-        JSONArray arrayGuardians = new JSONArray();
-        try {
-            for(Person p: guardians) {
-                arrayGuardians.put(p.toJson());
-            }
-            jsonMsg.put("action", ACTION.GUARDIANS);
-            jsonMsg.put("friends", arrayGuardians);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void loginServer(Person p) {
-        JSONObject json = new JSONObject();
-        try {
-            json.put("action", ACTION.LOGIN);
             json.put("name", p.getName());
             json.put("phone", p.getPhoneNumber());
         } catch (JSONException e) {

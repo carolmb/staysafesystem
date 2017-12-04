@@ -2,6 +2,7 @@ package com.example.ana.staysafesystem.gui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,23 +17,27 @@ import java.util.ArrayList;
 
 public class GuardianUserActivity extends AppCompatActivity {
 
-    ListView listView;
-    ArrayList<Person> currentFriends;
-    ArrayAdapter<Person> arrayAdapter;
+    static ListView listView;
+    static ArrayList<Person> currentFriends;
+    static ArrayAdapter<Person> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guardian);
         setTitle("3S - Guardião");
+        listView = findViewById(R.id.friends);
+        protectedFriends();
+    }
+
+    public void protectedFriends() {
 
         currentFriends = Processor.getInstance().getProtectedFriends();
-
-        listView = findViewById(R.id.friends);
         arrayAdapter = new ArrayAdapter<Person>(
                 this,
                 R.layout.contact_list_item,
                 currentFriends);
+        listView.setAdapter(arrayAdapter);
     }
 
     @Override

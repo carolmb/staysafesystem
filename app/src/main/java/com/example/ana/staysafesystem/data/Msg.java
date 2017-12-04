@@ -48,11 +48,10 @@ public class Msg {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         try {
-            json.put("action", ACTION.MSG);
             json.put("title", title);
             json.put("subtitle", subtitle);
             json.put("content", content);
-            json.put("name", from.getName());
+            json.put("username", from.getName());
             json.put("phone", from.getPhoneNumber());
             JSONArray jsonArray = new JSONArray();
             for (Person f: friends) {
@@ -66,6 +65,8 @@ public class Msg {
         }
         return null;
     }
+
+    public Person getFrom() { return from; }
 
     public String getTitle() {
         return title;

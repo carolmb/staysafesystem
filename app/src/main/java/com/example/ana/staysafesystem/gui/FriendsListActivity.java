@@ -9,6 +9,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +115,8 @@ public class FriendsListActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Processor.getInstance().saveCacheFriendsList(view.getContext());
+                Log.e("GUARDIANS", "save button pressed");
+                Processor.getInstance().saveCacheFriendsList(view.getContext(), currentFriends);
                 viewCurrentFriendsList();
                 Button editList = findViewById(R.id.editList);
                 editList.setVisibility(View.VISIBLE);
