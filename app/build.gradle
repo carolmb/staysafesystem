@@ -36,4 +36,5 @@ dependencies {
     implementation files('libs/httpclient-4.5.3.jar')
     implementation files('libs/httpcore-4.4.6.jar')
     compile 'me.aflak.libraries:pulltorefresh:1.0'
+    compile 'me.aflak.libraries:bluetooth:1.2.4'
 }

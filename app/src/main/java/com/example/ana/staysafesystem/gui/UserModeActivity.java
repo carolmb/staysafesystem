@@ -23,6 +23,8 @@ public class UserModeActivity extends AppCompatActivity {
         Intent server = new Intent(this, ServerConnectionService.class);
         startService(server);
 
+        Processor.getInstance().initInternalMemory(this);
+
         Button guardianUser = findViewById(R.id.guardian);
         guardianUser.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

@@ -49,7 +49,7 @@ public class ServerConnectionService extends Service {
     private NotificationManager mNM;
     int clientPort = 5561;
     static int serverPort = 5555;
-    static String serverIp = "192.168.0.108";
+    static String serverIp = "10.9.99.27";
 
     @Override
     public IBinder onBind(Intent intent) {

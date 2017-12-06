@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,9 +19,8 @@ import com.example.ana.staysafesystem.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.ana.staysafesystem.processor.Bluetooth;
-
 import me.aflak.pulltorefresh.PullToRefresh;
+import me.aflak.bluetooth.Bluetooth;
 
 /**
  * Created by Omar on 16/07/2015.
@@ -30,7 +28,6 @@ import me.aflak.pulltorefresh.PullToRefresh;
 public class SelectPairActivity extends Activity implements PullToRefresh.OnRefreshListener {
     private Bluetooth bt;
     private ListView listView;
-    private Button not_found;
     private List<BluetoothDevice> paired;
     private PullToRefresh pull_to_refresh;
     private boolean registered = false;
@@ -50,7 +47,6 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
 
         pull_to_refresh = findViewById(R.id.pull_to_refresh);
         listView =  findViewById(R.id.list);
-        not_found =  findViewById(R.id.not_in_list);
 
         pull_to_refresh.setListView(listView);
         pull_to_refresh.setOnRefreshListener(this);
@@ -67,14 +63,6 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
                 }
                 startActivity(i);
                 finish();
-            }
-        });
-
-        not_found.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(SelectPairActivity.this, BluetoothActivity.class);
-                startActivity(i);
             }
         });
 
@@ -125,7 +113,6 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
 
         listView.setAdapter(adapter);
 
-        not_found.setEnabled(true);
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -144,7 +131,7 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
                                 listView.setEnabled(false);
                             }
                         });
-                        Toast.makeText(SelectPairActivity.this, "Turn on bluetooth", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SelectPairActivity.this, "Ligue o bluetooth.", Toast.LENGTH_LONG).show();
                         break;
                     case BluetoothAdapter.STATE_ON:
                         runOnUiThread(new Runnable() {

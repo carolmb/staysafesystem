@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
                 Person user = new Person(name, phone);
                 if (user.isValid()) {
                     Processor.getInstance().setProtectedUser(context, user);
-                    Processor.getInstance().initInternalMemory(view.getContext());
 
                     UtilGUI.changeScreen(context, UserModeActivity.class);
                 } else {

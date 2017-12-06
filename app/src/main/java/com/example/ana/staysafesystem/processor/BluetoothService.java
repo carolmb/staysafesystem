@@ -7,13 +7,10 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -45,6 +42,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import me.aflak.bluetooth.Bluetooth;
+
 /**
  * Created by ana on 01/12/17.
  */
@@ -55,7 +54,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     static public boolean registered = false;
 
     static int serverPort = 5555;
-    static String serverIp = "192.168.0.108";
+    static String serverIp = "10.9.99.27";
 
     private NotificationManager mNM;
 
@@ -219,6 +218,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     }
 
     private void sendMsg(JSONObject json) {
+        Log.e("MSG", "sendMsg " + json);
         SensorsInfo sensorsInfo = new SensorsInfo(json);
         MetaMsg metaMsg = Processor.getInstance().getMsgSettings(this);
         Person user = Processor.getInstance().getProtectedUser(this);
@@ -230,6 +230,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     public void callFriend() {
         String number = Processor.getInstance().getCallFriend(this);
         Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.setData(Uri.parse("tel:" + number));
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.CALL_PHONE)
@@ -241,6 +242,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
 
 
     private static void sendSocket(final String ip, final int port, final String content) {
+        Log.e("SOCKET", content);
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
