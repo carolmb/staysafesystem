@@ -90,14 +90,14 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         Person from = new Person("Pulseira", "");
         String title = "Conexão com bluetooth";
         String subtitle = "Sua conexão com bluetooth ocorreu com sucesso.";
-        String content = "Você está conectado com sua pulseira.";
+        String content = "Você está conectado a sua pulseira.";
         createNotification(new Msg(from, title, subtitle, content));
     }
 
     private void createNotification(Msg msg) {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.help)
+                        .setSmallIcon(R.drawable.minilogo)
                         .setContentTitle(msg.getTitle())
                         .setContentText(msg.getSubtitle());
 

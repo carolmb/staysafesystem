@@ -1,6 +1,5 @@
 package com.example.ana.staysafesystem.gui;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -8,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +26,7 @@ import me.aflak.bluetooth.Bluetooth;
 /**
  * Created by Omar on 16/07/2015.
  */
-public class SelectPairActivity extends Activity implements PullToRefresh.OnRefreshListener {
+public class SelectPairActivity extends AppCompatActivity implements PullToRefresh.OnRefreshListener {
     private Bluetooth bt;
     private ListView listView;
     private List<BluetoothDevice> paired;

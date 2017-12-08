@@ -164,7 +164,7 @@ public class ServerConnectionService extends Service {
     private void createNotification(Msg msg) {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.help)
+                        .setSmallIcon(R.drawable.minilogo)
                         .setContentTitle(msg.getTitle())
                         .setContentText(msg.getSubtitle());
 
