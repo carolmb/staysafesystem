@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,6 +44,16 @@ public class ProtectedUserActivity extends AppCompatActivity {
         btIntent.putExtra("pos", pos);
         if(pos >= 0) {
             startService(btIntent);
+        }
+
+        String warning = getIntent().getStringExtra("warning");
+        if(warning != null) {
+            bluetoothText.setText(warning);
+        }
+
+        String btMsg = getIntent().getStringExtra("btMsg");
+        if(btMsg != null) {
+           bluetoothText.setText(btMsg);
         }
 
         enableRuntimePermission();

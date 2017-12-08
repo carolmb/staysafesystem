@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
     private List<BluetoothDevice> paired;
     private PullToRefresh pull_to_refresh;
     private boolean registered = false;
+    private Button avoid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,7 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
 
         pull_to_refresh = findViewById(R.id.pull_to_refresh);
         listView =  findViewById(R.id.list);
+        avoid = findViewById(R.id.next);
 
         pull_to_refresh.setListView(listView);
         pull_to_refresh.setOnRefreshListener(this);
@@ -63,6 +66,15 @@ public class SelectPairActivity extends Activity implements PullToRefresh.OnRefr
                 }
                 startActivity(i);
                 finish();
+            }
+        });
+
+        avoid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(SelectPairActivity.this, ProtectedUserActivity.class);
+                i.putExtra("warning", "Você não está conectado com sua pulseira.");
+                startActivity(i);
             }
         });
 

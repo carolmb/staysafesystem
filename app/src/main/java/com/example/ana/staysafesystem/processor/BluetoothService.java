@@ -32,6 +32,7 @@ import com.example.ana.staysafesystem.data.Person;
 import com.example.ana.staysafesystem.data.SensorsInfo;
 import com.example.ana.staysafesystem.gui.FriendAskingHelpActivity;
 import com.example.ana.staysafesystem.gui.ProtectedUserActivity;
+import com.example.ana.staysafesystem.gui.UtilGUI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,27 +68,29 @@ public class BluetoothService extends Service implements Bluetooth.Communication
     @Override
     public int onStartCommand(Intent intent, int flags, int id) {
         if(!registered) {
-            Log.e("EITAAA", "ele ta falso");
+            Log.e("BLUETOOTH", "Registered está falso");
             Bluetooth b = new Bluetooth(null);
             b.enableBluetooth();
             b.setCommunicationCallback(this);
             int pos = intent.getExtras().getInt("pos");
 
-            b.connectToDevice(b.getPairedDevices().get(pos));
-            IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(mReceiver, filter);
-            registered = true;
+            BluetoothDevice btDevice = b.getPairedDevices().get(pos);
 
+            b.connectToDevice(btDevice);
         }
         return START_STICKY;
     }
 
     @Override
     public void onConnect(BluetoothDevice device) {
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(mReceiver, filter);
+        registered = true;
+
         Person from = new Person("Pulseira", "");
         String title = "Conexão com bluetooth";
         String subtitle = "Sua conexão com bluetooth ocorreu com sucesso.";
-        String content = "Agora você está conectado com sua pulseira.";
+        String content = "Você está conectado com sua pulseira.";
         createNotification(new Msg(from, title, subtitle, content));
     }
 
@@ -99,7 +102,7 @@ public class BluetoothService extends Service implements Bluetooth.Communication
                         .setContentText(msg.getSubtitle());
 
         Intent resultIntent = new Intent(this, ProtectedUserActivity.class);
-        resultIntent.putExtra("contentMsg", msg.getContent());
+        resultIntent.putExtra("btMsg", msg.getContent());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(FriendAskingHelpActivity.class);
@@ -128,30 +131,26 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.e("EITAAA", message + " QUE ALEGRIA");
     }
 
     @Override
     public void onError(String message) {
         Log.e("Error: ", message);
+        Person from = new Person("Pulseira", "");
+        String title = "Conexão com bluetooth";
+        String subtitle = "Sua conexão com bluetooth NÃO ocorreu com sucesso.";
+        String content = "Você não está conectado a sua pulseira.";
+        createNotification(new Msg(from, title, subtitle, content));
     }
 
     @Override
     public void onConnectError(final BluetoothDevice device, String message) {
         Log.e("Error: ", message);
-        Thread thread = (new Thread() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        b.connectToDevice(device);
-                    }
-                }, 2000);
-            }
-        });
-        thread.run();
+        Person from = new Person("Pulseira", "");
+        String title = "Conexão com bluetooth";
+        String subtitle = "Sua conexão com bluetooth NÃO ocorreu com sucesso.";
+        String content = "Você não está conectado a sua pulseira.";
+        createNotification(new Msg(from, title, subtitle, content));
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -184,7 +183,6 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         }
     }
     };
-
 
     @Nullable
     @Override
@@ -239,7 +237,6 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         }
         startActivity(intent);
     }
-
 
     private static void sendSocket(final String ip, final int port, final String content) {
         Log.e("SOCKET", content);
@@ -301,6 +298,5 @@ public class BluetoothService extends Service implements Bluetooth.Communication
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 10, locationListener);
     }
-
 
 }
